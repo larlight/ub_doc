@@ -93,7 +93,8 @@ Calling this function prior to evaluation of merging (i.e. running some computat
 
 The idea is very simple: given two clusters, it is expected to return a boolean for decision making from the following function.
 \begin{lstlisting}
-        virtual bool Bool(const cluster::ClusterParamsAlg &, const cluster::ClusterParamsAlg &)
+        virtual bool Bool( const cluster::ClusterParamsAlg &, 
+                             const cluster::ClusterParamsAlg &)
 \end{lstlisting}
 As you can see, ``clusters'' are handed over in terms of {\cpan} instance.
 In {\cmerge}, the cluster merging application class, for instance, this is used for making merge decision as well as prohibit-merge decision (i.e. {\cmerge} holds two {\cbalgo} inherit class instance, one for merging and another for prohibiting).

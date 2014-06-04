@@ -1,0 +1,72 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{lgrind}
+\pagestyle{plain}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{cancel}
+\usepackage{appendix}
+\usepackage{fancyhdr}   
+\usepackage{url}
+\usepackage{path}
+\usepackage[dvipdfm]{graphicx}
+\usepackage{color}
+\usepackage{array}
+\usepackage{authblk}
+\usepackage[margin=2cm, head=2cm, foot=1cm]{geometry}
+\usepackage{verbatim}
+\setlength{\topmargin}{-2.5cm}
+\setlength{\textwidth}{17cm}
+\setlength{\oddsidemargin}{-0.5cm}
+\setlength{\evensidemargin}{-0.5cm}
+\setlength{\textheight}{22.5cm}
+\setlength{\footskip}{1cm}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\lstset{columns=fullflexible,basicstyle=\ttfamily}
+
+\input{./src/new_commands.tex}
+
+\begin{document}
+
+\title{PxUtil and ClusterRecoUtil: 2D Cluster Parameter Reconstruction Tool}
+%\date{March 12th, 2014}
+\author{
+  Corey J. Adams, corey.adams@yale.edu
+
+  Andrzej Szelc, andrzej.szelc@yale.edu
+
+  Kazuhiro Terao, kazuhiro@nevis.columbia.edu
+}
+\maketitle
+
+\begin{abstract}
+{\cru} is a package that includes useful tools for 2D cluster reconstruction and analysis.  The core of the package is the {\ttfamily ClusterParamsAlg} (a.k.a. {\cpan}), {\CPP} class designed as both algorithm and a holder of reconstructed cluster parameters. {\cpan} is used heavily in 2D cluster merging, and also for shower reconstruction and analysis \cite{CMTool,CMAlgo}. {\ttfamily PxUtil} is a collection of simple classes to represent objects on a 2D wire plane, and those objects are used within {\cpan}. They are not framework dependent data products, and hence this allows {\cpan} to be analysis framework independent in that regard. The package also includes a few utility classes. This document describes about all such tools but with a focus on {\cpan}.
+\end{abstract}
+
+% Table of Contents
+\tableofcontents
+
+\newpage
+
+% Misc items first
+\chapter{{\ttfamily PxUtil} and Utility Classes}
+\label{chap:util}
+\input{./src/Utility/main}
+
+% CPAN 
+\chapter{{\ttfamily ClusterParamsAlg} (a.k.a. {\cpan})}
+\label{chap:cpan}
+\input{./src/CPAN/main}
+
+% Bibliography
+\bibliographystyle{unsrt}
+
+\bibliography{CPAN}
+
+
+\end{document}

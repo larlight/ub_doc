@@ -20,7 +20,8 @@ Because {\cmerge} outsource an independent algorithm class to perform merging of
 The core part of decision making is simple: provided 2 clusters, decide whether they should be merged or not.
 This is done through {\cmalgo::Bool()} function call:
 \begin{lstlisting}
-  virtual bool Bool( const cluster::ClusterParamsAlg &, const cluster::ClusterParamsAlg &)
+  virtual bool Bool( const cluster::ClusterParamsAlg &, 
+                       const cluster::ClusterParamsAlg &)
 \end{lstlisting}
 If the return is {\ttfamily true}, two clusters are merged. Else not.
 This is ilustrated in Fig.\ref{sec:fmwk:cmerge:merge_example}.
@@ -94,7 +95,7 @@ An overall process flow diagram is already shown in Fig.\ref{sec:fmwk:base:cmerg
     \item[] See Fig.\ref{sec:fmwk:cmerge:iterative_stream}. Only occurs if prohibit algorithm is provided by a user (optional). Records which cluster pair to be prohibited for merging using {\cbkeeper}.
   \end{itemize}
 
-\item Prohibit {\cmalgo} Loop Over Cluster Pairs
+\item Merge {\cmalgo} Loop Over Cluster Pairs
   \begin{itemize}
     \item[] See Fig.\ref{sec:fmwk:cmerge:iterative_stream}. The algorithm's {\ttfamily Bool()} is not executed for a subject pair of clusters if (a) they are prohibited for merging or (b) already inspected in the previous process and not merged (i.e. result should not change). This is to save computation time.
   \end{itemize}
