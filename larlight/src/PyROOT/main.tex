@@ -1,0 +1,33 @@
+If you never ever want to use an interpreter language like \python and \CINT, then 
+you should really skip it.
+
+Still here? Well, sure, still you don't have to use \python and skip this chapter ;) 
+But the author strongly recommends, at least, to learn how to use it.
+Let us flip the question: why do we use \CINT?
+Probably only because \CINT was the only interpreter language (= a language that is ``easy'' to use) 
+and \ROOT classes are available in \CINT. But now \ROOT classes are also available in \python, 
+and here's why you might want to consider this option.
+\begin{itemize}
+\item \python is one of the most popular languages. Knowing it, you can even get a job.
+\item IMHO it is a better option than \CINT because it is
+      \begin{itemize}
+      \item far more robust
+      \item purely object oriented
+      \item much better documented (ask Prof. Google)
+      \end{itemize}
+\item You can use compiled libraries in \python through \PyROOT. It means your execution speed can be as fast as compiled executable while flexibility and simplicity as an interpreter language remains same.
+\end{itemize}
+Below we go through a few sections to see how one can use LArLight in \python.
+
+\section{\python 101}
+\label{sec:python101}
+\input{src/PyROOT/Python101}
+
+\section{\PyROOT: Using \ROOT Classes in \python}
+\label{sec:pyroot}
+\input{src/PyROOT/PyROOT}
+
+\section{LArLight Classes}
+\label{sec:larlightwithpython}
+\input{src/PyROOT/LArLight}
+

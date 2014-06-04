@@ -1,0 +1,45 @@
+List of development related FAQs.
+
+\begin{itemize}
+
+\item[] {\bf Who do you mean by ``developer''?}
+  \begin{itemize}
+    \item Probably you and everyone who uses LArLight. As asid in Ch.\ref{chap:introduction}, LArLight has started as \CPP play ground for summer students. There is more support on writing code than using the existing code. Anyone who generates his/her own package and extend it is a developer!
+  \end{itemize}
+
+\item[] {\bf OK so I want to write my own code. Can I have my working space or something in LArLight?}
+  \begin{itemize}
+    \item Yes, you can have your own package. See Ch.\ref{chap:generate}.
+  \end{itemize}
+
+\item[] {\bf Should I care about compiler's warning messages?}
+  \begin{itemize}
+    \item You really should.
+  \end{itemize}
+
+\item[] {\bf OK I wrote some code. How can I test? Do I have to run an event loop?}
+  \begin{itemize}
+    \item Not necessarily. If your have a specific function to test, why don't you write a few lines of \PyROOT or \CINT script and call that function? See Sec.\ref{sec:helloworld}.
+  \end{itemize}
+
+\item[] {\bf Need to test my code by running an event loop. How can I get a test LArLight data sample?}
+  \begin{itemize}
+    \item You can either (1) generate your own, (2) convert from LArSoft into LArLight, or (3) use existing files. See Ch.\ref{chap:datafile}.
+  \end{itemize}
+
+\item[] {\bf What are the options to ``run'' my code? }
+  \begin{itemize}
+    \item You can 
+      \begin{itemize}
+        \item Write your own executable source code and compile it under {\ttfamily bin} directory (see Sec.\ref{sec:yourcompiledexe})
+        \item Write \CINT or \PyROOT script (see Sec.\ref{sec:yourrunscript})
+      \end{itemize}
+      There is no better or worse in either method. There are different use cases. Either method works with a debugger such as {\ttfamily gdb} or {\ttfamily llldb} though the author has limited experience with \CINT and strongly recommends \PyROOT over \CINT.
+  \end{itemize}
+
+\item[] {\bf I want to develop my code in LArLight but need to transport to LArSoft soemtime in future. Any tip?}
+  \begin{itemize}
+    \item LArLight only depends \ROOT and \CPP, so you should be able to copy most part of your code except for some portion that uses other LArLight packages you are not exporting to LArSoft. For instance, functions that access LArLight data products. So, when you write your code, keep that in mind and structure your code to decouple a dependency to LArLight data products from the algorithm, the core part of your code. One solution is to define your own data container \CPP struct, copy LArLight data into it, and work on it. When you transport your code to LArSoft, then, you just need to change one function that fills your \CPP struct to use LArSoft data products instead of LArLight.
+  \end{itemize}
+
+\end{itemize}

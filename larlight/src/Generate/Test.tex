@@ -1,0 +1,24 @@
+DOCUMENTATION NEEDED
+
+\subsection{Testing \Base}
+
+\Base package only defines some base class and constants. 
+You can test from your \CINT session.
+\begin{lstlisting}
+> root
+root[0] gSystem->Load(``libBase'')
+root[1] larlight::DATA::Event
+\end{lstlisting}
+Above lines are (1) loading compiled library for \Base package and (2) accessing defined constant in \Base package.
+If you see no error message, that means your \Base package compilation was successful.
+
+\subsection{Testing DataFormat}
+For those who have \PyROOT, you can try invoking the following script to test if the build was successful or not.
+
+\begin{lstlisting}
+> cd $MAKE_TOP_DIR/AnaProcess/DataFormat/mac
+> python test.py
+\end{lstlisting}
+
+This {\ttfamily test.py} script runs I/O handler class to open a \ROOT file and write some data in it.
+If you see no issue running this script, then \DataFormat is compiled correctly

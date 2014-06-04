@@ -1,0 +1,22 @@
+
+This chapter describes briefly about \Analysis package, the analysis framework of LArLight.
+It comes in largely two pieces:
+\begin{itemize}
+\item Analysis Unit
+\item Processor
+\end{itemize}
+The first bullet corresponds to LArSoft's ``module'' (i.e. {\ttfamily art::EDAnalyzer/EDProducer}).
+The second bullet is an executor of analysis unit(s) by interfacing with {\ttfamily storage\_manager} (i.e. LArLight I/O interface class, see Sec.\ref{sec:io}). \\
+
+Before going into details, do not misunderstand that you are constrained to do your analysis this way.
+Like it was described in Sec.\ref{sec:io}, you have an interface to run your own event loop in whatever the way you wish.
+Using the analysis framework is just a suggestion and not a requirement.
+Or please share if you made something better ;)
+
+\section{Analysis Unit}
+\label{sec:ana_base}
+\input{./src/Analysis/AnaBase}
+
+\section{Processor}
+\label{sec:ana_processor}
+\input{./src/Analysis/AnaProcessor}

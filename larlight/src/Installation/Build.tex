@@ -1,0 +1,68 @@
+
+\subsection{Building \Core}
+
+The repository contents are not discussed here, but we attempt build the framework blindly.
+Make sure you have a list of prerequisite (see \ref{sec:prerequisite}) checked out.
+Try:
+\begin{lstlisting}
+    (... you are in MyLArLight directory ...)
+    > export MAKE_TOP_DIR=$PWD
+    > source config/setup.sh
+\end{lstlisting}
+
+If above commands give you a message telling you to type ``make'', then your set up is complete.
+If that is not the case, ask for a help. Assuming you were succesful, try:
+\begin{lstlisting}
+    > make -j4
+\end{lstlisting}
+
+where ``-j4'' means to use 4 threads/cores to compile. 
+Change the number to what is suitable for your case (you can ask more than available but that might slow down the process).
+
+Look for a compiler error... No? Great! Yes? Sorry... please contact the author!
+
+The build takes about 30 seconds on the author's MacBook Pro (OSX 10.9.1). 
+It takes about same time on Ubuntu 12.04LTS running on the virtualbox. 
+It takes, however, a few minutes on uboonegpvm nodes for the first time build.
+This is likely related to the fact these machines are often under heavy use.
+
+\subsubsection{Success Build?}
+
+Once the build is finished, check:
+\begin{lstlisting}
+    > ls lib
+\end{lstlisting}
+You should find {\ttfamily libBase.so, libDataFormat.so, libAnalysis.so, libLArUtil.so}. These are four building blocks of the framework and will be described in the later section of this document.  
+
+\subsection{Building \UserDev}
+
+I hope you will eventually write your own package and enjoy coding. This happens under \UserDev directory. When you checked out, you see there are lots of sub directories under \UserDev. These are all packages written by someone from scratch. 
+
+In order to build packages under \UserDev, you can go to a package directory and type ``make''. But hey, obviously we don't want to do that for many packages. Moreover, you might want to specify a default set of packages to be built each time. This can be done by the following steps:
+
+Here is a way to specify two extra packages, \FEMPulseStudy and \FEMPulseReco:
+\begin{lstlisting}
+    > cd $MAKE_TOP_DIR
+    > export USER_MODULE=``FEMPulseStudy FEMPulseReco''
+    > source config/setup.sh
+    > make -j4
+\end{lstlisting}
+As you see, the packages to be compiled under \UserDev can be specified by {\ttfamily \$USER\_MODULE} shell environment variable.  Sourcing {\ttfamily config/setup.sh} creates a new GNUmakefile to compile the specified packages in the respective order to keep the dependency straight if there is any.
+
+
+\subsection{Generating Documentation}
+\label{sec:gendoxygen}
+If you have {\ttfamily doxygen} installed, you can generate your own web documentation that includes \CPP class/namespace index, just like that of \ROOT.
+\begin{lstlisting}
+    > cd $MAKE_TOP_DIR
+    > make doxygen
+\end{lstlisting}
+You can open the top page using firefox:
+\begin{lstlisting}
+    > firefox  $MAKE_TOP_DIR/doc/dOxygenMyProject/html/index.html
+\end{lstlisting}
+or, on Mac OSX,
+\begin{lstlisting}
+    > open $MAKE_TOP_DIR/doc/dOxygenMyProject/html/index.html
+\end{lstlisting}
+

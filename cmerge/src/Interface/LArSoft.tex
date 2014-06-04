@@ -1,0 +1,40 @@
+
+This section describes the {\larsoft} interface, called {\ttfamily ClusterMergeHelper}, and an example data producer module, {\ttfamily SimplerClusterMerger}.
+
+\subsection{{\ttfamily ClusterMergeHelper}}
+This is a simple wrapper class for {\cmerge} that can be found under:
+\begin{lstlisting}
+  larreco/RecoAlg/ClusterMergeHelper.h
+\end{lstlisting}
+It holds {\cmerge} instance which a user can retrieve through
+\begin{lstlisting}
+  CMergeManager& GetManager()
+\end{lstlisting}
+and configure as (s)he wish. 
+
+There are two important wrapper functions that can take {\larsoft} data product as input, convert into a collection of {\pxhit} and feed into {\cmerge} instance. First one takes a vector of clusters where each cluster is represented as {\ttfamily std::vector<art::Ptr<recob::Hit> >}.
+\begin{lstlisting}
+  void SetClusters(const std::vector<std::vector<art::Ptr> > >&)
+\end{lstlisting}
+The second one takes {\ttfamily art::Event} reference with the producer module name for an input {\ttfamily recob::Cluster} data product.
+\begin{lstlisting}
+  void SetClusters(const art::Event&, const std::string&)
+\end{lstlisting}
+
+Finally, there is a function that can produce output data product and store in {\ttfamily art::Event}:
+\begin{lstlisting}
+  void AppendResult( art::EDProducer&,
+                       art::Event&,
+                       std::vector<recob::Cluster>&,
+                       art::Assns<recob::Cluster,recob::Hit>& )
+\end{lstlisting}
+where arguments are producer module's object reference, {\ttfamily art::Event} reference that should have been provided to the module, output data products' reference (i.e. vector of {\ttfamily recob::Cluster} and {\ttfamily art::Assns}).
+
+\subsection{\ttfamily SimpleClusterMerger}
+This is an {\ttfamily art::EDProducer} inherit class, a data product producer module in {\larsoft}, that uses {\ttfamily ClusterMergeHelper} to perform cluster merging with some existing merge and prohibit algorithms.
+It can be found in here:
+\begin{lstlisting}
+  larreco/ClusterFinder/SimpleClusterMerger_module.cc
+\end{lstlisting}
+The code is commented fairly alright, so one should see the code for details of what is done.
+Basically all operations done in the module are functions already described in this document by this point.

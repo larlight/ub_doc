@@ -1,0 +1,26 @@
+Like you can access \ROOT classes in \python, LArLight provides a support of
+\CINT dictionary generation, which allows you to access LArLight classes from
+\python in the very similar way. Let's try to instantiate {\ttfamily storage\_manager} object.
+\begin{lstlisting}
+    import ROOT
+    from ROOT import larlight
+    my_storage = storage_manager()
+\end{lstlisting}
+Easy, right? This section describes why this can be useful for us.
+
+\subsection{Fast Execution}
+One downside of using \python is that it can make your code slow if you do a computationally
+intensive task, such as running loop like {\ttfamily for}/{\ttfamily while}. Usually we
+compile our \CPP code to (1) debug mistakes and (2) optimize execution speed.
+
+But if you have compiled your \CPP code in LArLight, and import your compiled code to use it
+in \python, the execution speed of your code remains same as the compiled code. A good example
+is an event loop. Recall {\ttfamily ana\_processor::run()} runs a batch event loop. Because
+it is a compiled code, whether calling this function in \python through \PyROOT or writing
+a \CPP compiled executable to call this function, you get the same speed. 
+
+\PyROOT brings a very handy merging of compiled \CPP libraries with handy scripting language, 
+\python. This is fruitful and hence supported in LArLight as much as possible.
+
+\subsection{Easy (possibly dirty) Data Access}
+DOCUMENTATION ONGOING

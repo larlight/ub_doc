@@ -1,0 +1,69 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{lgrind}
+\pagestyle{plain}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{cancel}
+\usepackage{appendix}
+\usepackage{fancyhdr}   
+\usepackage{url}
+\usepackage{path}
+\usepackage[dvipdfm]{graphicx}
+\usepackage{color}
+\usepackage{array}
+\usepackage{authblk}
+\usepackage[margin=2cm, head=2cm, foot=1cm]{geometry}
+\usepackage{verbatim}
+\setlength{\topmargin}{-2.5cm}
+\setlength{\textwidth}{17cm}
+\setlength{\oddsidemargin}{-0.5cm}
+\setlength{\evensidemargin}{-0.5cm}
+\setlength{\textheight}{22.5cm}
+\setlength{\footskip}{1cm}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\lstset{columns=fullflexible,basicstyle=\ttfamily}
+
+\input{./src/new_commands.tex}
+
+\begin{document}
+
+\title{CMTool \\ \vspace{0.1in} Simple Tool for Clustering of Clusters}
+%\date{March 12th, 2014}
+\author{Kazuhiro Terao, kazuhiro@nevis.columbia.edu}
+\maketitle
+
+\begin{abstract}
+{\cmtool} is a simple framework for clustering of clusters. In particular, it supports two kinds of clustering: (1) merging of multiple clusters in one plane and (2) pairing of a cluster from each wire plane. It makes a use of {\cpan} from {\cru} toolkit to represent a 2D cluster. There is an interface to produce {\cpan} from a cluster data product that is analysis framework specific. This allows {\cmtool} to be (almost) independent of analysis framework, and makes it available in both {\larsoft} and {\larlight} in particular. {\cmtool} supports iterative approach for cluster merging and matching of clusters. The modulated design also decouples algorithm implementation from the rest of merging tasks such as looping over cluster pairs and keeping track of the process. This also makes it easy for anyone to develop his/her own algorithm easily and efficiently. This documentation currently only describes about (1) as (2) is still underdevelopment. 
+\end{abstract}
+
+% Table of Contents
+\tableofcontents
+
+\newpage
+% How-to on setting things up
+\chapter{{\ttfamily CMTool} Framework Basics}
+\label{chap:basics}
+\input{./src/Framework/main}
+
+\chapter{Analysis FMWK Interface}
+\label{chap:fmwk_interface}
+\input{./src/Interface/main}
+
+% FAQ
+\chapter{FAQ}
+\label{chap:faq}
+\input{src/FAQ/main}
+
+% Bibliography
+\bibliographystyle{unsrt}
+
+\bibliography{CMTool}
+
+
+\end{document}

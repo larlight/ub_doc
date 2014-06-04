@@ -1,0 +1,125 @@
+The data product classes are meant to store LArSoft output data, hence their design follows closely with what is in LArSoft.
+If you look at a header file of data product class, you should find LArLight data product classes carry same or very similar attributes name to reduce confusion.
+For adding further data product classes to store LArSoft data, it is recommended to keep this trend to reduce confusion.
+Here is a list of LArLight data products (left) with corresponding LArSoft data product (right) as of now.
+\begin{lstlisting}
+    larlight::mctruth <==> simb::MCTruth
+    larlight::mcnu <==> simb::MCNeutrino
+    larlight::mctrack <==> simb::MCTrajectory
+    larlight::mcpart <==> simb::MCParticle
+    larlight::tpcfifo <==> raw::RawDigit
+    larlight::pmtfifo <==> optdata::FIFOChannel
+    larlight::wire <==> recob::Wire
+    larlight::hit  <==> recob::Hit
+    larlight::cluster <==> recob::Cluster
+    larlight::spacepoint <==> recob::SpacePoint
+    larlight::track <==> recob::Track
+    larlight::shower <==> recob::Shower
+    larlight::endpoint2d <==> recob::EndPoint2D
+    larlight::vertex <==> recob::Vertex
+    larlight::calorimetry <==> anab::Calorimetry
+    larlight::trigger <==> (not yet existing in LArSoft)
+    larlight::user_info ... LArLight-only custom data product
+\end{lstlisting}
+There is additional data product called {\ttfamily user\_info} which will be described later.
+
+All data product class shares the base class {\ttfamily larlight::data\_base} which stores two variables:
+\begin{itemize}
+\item {\ttfamily larlight::DATA::DATA\_TYPE}
+  \begin{itemize}
+    \item[] This \enum specifies the type of data stored. For instance, {\ttfamily larlight::hit} can be assigned with {\ttfamily larlight::DATA::FFTHit}, {\ttfamily larlight::DATA::APAHit}, and so on. By accessing this enum value, a user knows what kind of ``hit'' is stored.
+  \end{itemize}
+\item {\ttfamily std::map<larlight::DATA::DATA\_TYPE,std::vector<std::vector<unsigned short> > >}
+  \begin{itemize}
+    \item[] This is used to specify the association. This is described later in detail.
+  \end{itemize}
+\end{itemize}
+
+\subsection{What is stored per event?}
+Despite a few exceptions (which I describe next), each data product class {\ttfamily T} has a corresponding collection class which inherits from {\ttfamily std::vector<T>}, named as {\ttfamily event\_T}. 
+For instance, in {\ttfamily cluster.hh}, you find there is a class {\ttfamily larlight::cluster} and {\ttfamily larlight::event\_cluster} where the latter is a type {\ttfamily std::vector<larlight::cluster>}. What is stored per event is {\ttfamily std::vector<T>}, just like a collection of object is stored in LArSoft. This collection data product also inherits from {\ttfamily data\_base}, but it carries additional inforamtion:
+\begin{itemize}
+\item Event number
+\item Run number
+\item Sub-Run number
+\end{itemize}
+
+Exceptions to this event-wise collection storage scheme include {\ttfamily larlight::mcnu} and {\ttfamily larlight::mctrack}.
+In LArSoft, {\ttfamily simb::MCNeutrino} is stored as a part of {\ttfamily simb::MCTruth}. Likewise, {\ttfamily simb::MCTrajectory} is stored as a part of {\ttfamily simb::MCParticle}. LArLight respects this scheme and stores {\ttfamily larlight::mcnu} in {\ttfamily larlight::mctruth} and {\ttfamily larlight::mctrack} in {\ttfamily larlight::mcpart}.
+
+\subsubsection{A few remarks on MC data products}
+In case you are unfamiliar with these MC information, though this is a side-track, {\ttfamily larlight::mcnu} stores neutrino specific information from neutrino generator. It is a part of {\ttfamily larlight::mctruth} because a generator (whether it is neutrino generator or not) stores {\ttfamily larlight::mctruth} in general. Similarly, {\ttfamily larlight::mctrack} is part of {\ttfamily larlight::mcpart} because a particle's trajectory points (that is what {\ttfamily larlight::mctrack} is) belong to a particle information which is {\ttfamily larlight::mcpart}.
+
+\subsubsection{More useful info to store?}
+If you have some information you think is very useful, let's store it :)
+For instance, it was advised that knowing a part of {\ttfamily larlight::mctrack} that is inside the fiducial volume is very useful information.
+So we added this information in {\ttfamily larlight::mctrack} for users so that a user can access particle trajectory points inside the fiducial volume quickly instead of looping over all trajectory points and inspect whether it is in the fiducial volume or not.
+
+Your ideas can help others. So please share it!
+
+\subsubsection{Adding new data product?}
+By all means, go ahead. There are important pieces missing, for instance vertex!
+That being said, however, a mistake can break DataFormat which is shared among all users.
+So feel free to consult with the author.\\
+
+Alternative solution is to ask the author to add it. 
+Believe me, it's so simple and it won't take me > 10 minutes to add another on the list above.
+
+\subsection{Custon data product for dynamic variable declaration ... {\ttfamily user\_info}}
+
+Sometimes you want a custom data product and store information in the output data root file.
+For instance:
+\begin{itemize}
+\item you want to store some parameter values but not worth making a new data product (say studying a parameter)
+\item you want to store some parameter values for certain events/objects, but not all.
+\end{itemize}
+
+Then {\ttfamily user\_info} might be handy for you. This data product class contains several {\ttfamily std::map} which allows you to store following basic variable types:
+\begin{lstlisting}
+    Bool_t
+    Int_t
+    Double_t
+    std::string
+    std::vector<Bool_t>
+    std::vector<Int_t>
+    std::vector<Double_t>
+    std::vector<std::string>
+\end{lstlisting}
+When you store these variables in {\ttfamily user\_info}, you store with a {\ttfamily std::string} key. 
+Then you can access the stored value by this key. 
+You can use the same key to store different type of variables: mixing is prevented.
+If you reuse a key that is already used to store the same type of variable, you will overwrite the value.
+There is a function to check if the key is already in use or not, so a user can avoid overwriting the value.\\
+
+Using {\ttfamily std::map} is not great for speed when retrieving the variable. 
+But this seems to be a matter of micro-seconds or less, depending on number of keys used.
+
+\subsection{Association}
+
+The author has no idea how association is stored in \ART. But that does not matter.
+
+As you have seen in the previous section, all data product are stored in terms of {\ttfamily std::vector} collection.
+So ultimately what you need to associate one object to (an)other are:
+\begin{itemize}
+\item A set of indexes that point to the right {\ttfamily std::vector} index.
+\item Associated data type to know which collection {\ttfamily std::vector} to access.
+\end{itemize}
+To do this, {\ttfamily data\_base}, the base of all data product, has:
+\begin{lstlisting}
+    std::map<larlight::DATA::DATA_TYPE,std::vector<std::vector<unsigned short> > > 
+\end{lstlisting}
+My god, such a long specialization name... 
+
+Then we wonder why we store a ``vector of vector'' instead just a ``vector''?
+This is because \ART is capable to store more than one set of association (I think).
+Even if \ART won't do that, having LArLight being capable to store multiple association of the same data type could be handy.
+So that's why we have such thing in {\ttfamily data\_base}.\\
+
+Retrieving association is as simple as calling the following function:
+\begin{lstlisting}
+    data_base::association(larlight::DATA::DATA_TYPE, size_t i=0)
+\end{lstlisting}
+You provide the association type in the 1st argument.
+The 2nd argument is to specify which association of the provided type to access.
+Because we have only one set of association in many cases (for example, one cluster has only one set of hits associated), almost always the 2nd argument is 0 (i.e. 0th element of vector of associations).
+For this reason, the default value of the 2nd argument is 0, and most users do not need to provide 2nd argument.

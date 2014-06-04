@@ -1,0 +1,100 @@
+LArLight is a very simple \CPP extention package based on \ROOT. 
+At this point supported platforms include Linux and OSX Darwin. 
+
+\subsection{Minimum Requirements}
+Here is a brief list of requirements you need to checkout and compile LArLight:
+\begin{itemize}
+\item Supported Operating Systems
+    \begin{itemize}
+    \item Mac OSX 10.5.8 (Darwin 9.8) or later with Xcode 3.1.4 or later
+    \item Linux 2.6.0 or later with \gpp 4.1 or later
+    \end{itemize}
+\item Version Control Tool
+    \begin{itemize}
+    \item \git 1.7.1 or later
+    \end{itemize}
+\item \ROOT
+    \begin{itemize}
+    \item v5.28.00 or later
+    \end{itemize}
+\end{itemize}
+
+If your system does not meet the requirements above, or if you have requirements above fulfilled but have an issue with the build, please contact the author!
+
+Note that these are minimal requirements to build LArLight. It's strongly recommended to have resources noted in the following subsection so that you can use:
+\begin{itemize}
+    \item {\ttfamily C++11} features
+    \item \PyROOT
+    \item Analysis on LArLight files converted from LArSoft.
+\end{itemize}
+
+
+\subsection{Recommended Resources}
+Following features are strongly encouraged:
+\begin{itemize}
+    \item Operating Systems \& Compilers ... to use {\ttfamily C++11} features
+      \begin{itemize}
+          \item Mac OSX 10.6 (Darwin 10.8) or later with \clang 3.1 or later
+          \item Linux 3.11 or later with \gpp 4.3 or later
+      \end{itemize}
+
+    \item \python 2.6 or later (but not 3.X) with headers/libraries
+      \begin{itemize}
+          \item Headers/libs for OSX can be obtained through Xcode or source tree
+          \item For RHL: ``{\ttfamily yum install python-devel}'' 
+          \item For Debian: ``{\ttfamily apt-get install python-dev}''
+      \end{itemize}
+
+    \item \ROOT v5.34.07 or later with \PyROOT
+      \begin{itemize}
+          \item This version seems compatible with LArLight files created by LArSoft's \ROOT process.
+      \end{itemize}
+
+    \item \doxygen
+      \begin{itemize}
+          \item LArLight includes \doxygen script + uses \doxygen style comment all the places
+      \end{itemize}
+
+\end{itemize}
+
+Please note there are dependencies among items listed above.
+In particular, LArLight depends on \ROOT, \PyROOT depends on \python, and of course all compilation depends on the compiler.
+If you are to obtain/update those, you might want to do them in order as well. For instance, install \clang, install \python 2.7, then compile \ROOT from source (to get \PyROOT compilation with your new \python), and then compile LArLight.
+
+\subsubsection{I don't have \clang. What do I miss?}
+Please refer to FAQ in Sec.\ref{sec:faq_build}.
+
+\subsubsection{Why \PyROOT?}
+Simply because \python is 
+\begin{enumerate}
+\item Far more easier and stable to use compared to \CINT
+\item Real object oriented interpreter language
+\item Full access to \ROOT and LArLight compiled libraries through \PyROOT
+\end{enumerate}
+If you never used \PyROOT before, you might worry that using an interactive language like \python (and \CINT) is slow.
+That is not necessarily true. 
+Compile the complicated part of your code (which takes computation time) in \CPP, then use that in \python. 
+This way, your \python script runs very fast.
+Strength of using \python + \PyROOT is further discussed in Ch.\ref{chap:pyroot}.
+
+\subsubsection{\PyROOT Installation Help?}
+\label{sec:pyroothelp}
+By default, recent \ROOT installation ($>$5.28 as of now) includes \PyROOT IFF \ROOT configuration script finds python header and libraries. 
+On some Linux installation including Ubuntu 12.04LTS, {\ttfamily libpython2.X.so} and/or {\ttfamily python.h} is missing, and \ROOT abort \PyROOT installation.
+If you wish, you can simply try installing {\ttfamily python-dev}, then re-configure \ROOT and recompile. 
+
+Once you are sure \ROOT is configured with \python and compiled, check if you find {\ttfamily ROOT.py} under {\ttfamily \$ROOTSYS/lib}. Here I assumed your \ROOT library installation location. Change it to whatever you set if not same. This {\ttfamily ROOT.py} is what \python actually uses to import \ROOT. If you find it, try:
+\begin{lstlisting}
+    export PYTHONPATH=$ROOTSYS/lib:$PYTHONPATH
+\end{lstlisting}
+This way, \python automatically finds your {\ttfamily ROOT.py} when you attempt to ``import ROOT'' in \python session.\\
+
+Contact the author if you have a problem installing \PyROOT (as he recommends using \PyROOT!).
+
+
+
+
+
+
+
+

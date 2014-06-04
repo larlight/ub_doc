@@ -1,0 +1,60 @@
+The following release versions are made based on major updates and testing of stability for framework base components (i.e. packages under \Core directory). 
+\begin{itemize}
+
+\item[] {\bf v2.3.1}
+  \begin{itemize}
+  \item Bug fix in {\ttfamily mcshower} 
+  \item Bug fix in {\ttfamily Geometry}
+  \item Bug fix in {\ttfamily ana\_processor}
+  \item Put capability to support multiple experiments in {\ttfamily LArUtil}
+  \end{itemize}
+
+
+\item[] {\bf v2.3.0}
+  \begin{itemize}
+    \item Changed {\ttfamily data\_base} to sore association using {\ttfamily unsigned int} instead of {\ttfamily unsigned short}.
+    \item Added {\ttfamily mcshower} object to store MC truth shower object.
+    \item Use {\ttfamily larlight::hit} pointer instead of object in {\ttfamily ClusterParamsAlg}, better processing speed.
+    \item Nice addition by Nathaniel which made {\ttfamily export MAKE\_TOP\_DIR} unnecessary ;)
+  \end{itemize}
+
+\item[] {\bf v2.2.2}
+  \begin{itemize}
+    \item Introduced ClusterRecoAlg under \UserDev. Some LArSoft algorithms are transported including HoughBaseAlg, ClusterParamsAlg, and ClusterMergeAlg
+    \item Introduced ShowerAngleCluster in ClusterStudy package under \UserDev
+    \item Fixed bugs in \LArUtil (bug in the stored TTree geometry data)
+    \item Fixed minor bugs in \DataFormat and \Analysis
+  \end{itemize}
+
+\item[] {\bf v2.2.1}
+  \begin{itemize}
+    \item Introduced \LArUtil package that contains {\it ala} LArSoft utility classes. Currently {\ttfamily Geometry}, {\ttfamily LArProperties}, {\ttfamily DetectorProperties}, and {\ttfamily GeometryUtilities}.
+    \item Structural change: main packages (\Base, \DataFormat, \Analysis, \LArUtil) are now under \Core directory. {\ttfamily AnaProcess} is renamed to {\ttfamily UserDev} and stays as user's development area.
+  \end{itemize}
+
+\item[] {\bf v2.2.0}
+  \begin{itemize}
+    \item Included {\ttfamily tpcfifo} and {\ttfamily pmtfifo} data products from David C.
+    \item Included TriggerSim package for UB trigger algorithm simulation
+  \end{itemize}
+
+\item[] {\bf v2.1.1}
+  \begin{itemize}
+    \item Included Bill's suggestion on the comments in the template source code
+    \item Included empty \CPP class generation script in the bin directory of a user's analysis package
+    \item Included a sample waveform generation code for example code in the manual
+  \end{itemize}
+
+\item[] {\bf v2.1.0}
+  \begin{itemize}
+    \item Added {\ttfamily recob::EndPoint2D} and {\ttfamily recob::Vertex} equivalent data products
+    \item Fixed {\ttfamily bin} directory compilation issue for Ubuntu 12.04LTS
+  \end{itemize}
+
+\item[] {\bf v2.0.0}
+  \begin{itemize}
+    \item Initial frozen release upon presenting in Analysis Tool meeting. 
+  \end{itemize}
+
+\end{itemize}
+

@@ -1,0 +1,136 @@
+As described in Ch.\ref{chap:dataformat}, LArLight has its own data format.
+Event though it is designed to be similar to that of LArSoft, it is not equivalent.
+So how can we analyze LArSoft data file using LArLight?
+
+There are two possibilities:
+\begin{itemize}
+\item Convert LArSoft data file into LArLight format
+\item Implement a utility class to interface LArSoft data file
+\end{itemize}
+The first point is currently done by using a dedicated LArSoft analyzer module called {\ttfamily DataScanner}. This is described in details in this section.
+
+The second point does not mean we have to introduce {\ttfamily art} framework dependency in LArLight: that would screw up the whole purpose of LArLight and probably almost all ``strength'' listed in Ch.\ref{chap:introduction} will be gone. Although this is not yet available, extracting data from LArSoft files without {\ttfamily art} or LArSoft framework seems possible as there is a beautiful working example, {\ttfamily Argo}. It would be great if someone can implement such feature also in LArLight someday...
+
+\subsection{LArSoft $\Rightarrow$ LArLight: \DataScanner}
+ \DataScanner is a LArSoft module that is maintained @ FNAL git repository:
+\begin{lstlisting}
+https://cdcvs.fnal.gov/redmine/projects/ubooneoffline/repository/kterao/
+\end{lstlisting}
+
+\subsubsection{0. Prerequisite}
+As mentioned above, it uses LArSoft. So you have to have LArSoft environment set up and running. In particular, you have to have a shell environment variable {\ttfamily \$MRB\_TOP} set and pointing to your local MRB repository. If you have this set up, then you can go to {\bf 1. Checking Out and Build \DataScanner}.\\
+
+{\bf If you are not sure how to do this at all, and if you do not mind blindly following the author's suggestion,} there is a set of shell scripts to do this for you under LArLight repository (only for FNAL gpvm nodes, though). If you want to know how things work behind the scene (i.e. if you want to learn properly), there is a good guidance available \cite{LArDevWiki}.
+
+First, checkout LArLight if you have not done so:
+\begin{lstlisting}
+    > cd /uboone/app/users/$USER
+    > git clone git@github.com:/larlight/LArLight LArLight
+    > cd LArLight
+    > export MAKE_TOP_DIR=$PWD
+\end{lstlisting}
+Do not source {\ttfamily setup.sh} yet. 
+That will fail as you do not have \ROOT set up. Next, try:
+\begin{lstlisting}
+    > source config/setup_mrb_lar.sh
+    > source config/setup.sh
+    > make -j4
+\end{lstlisting}
+This will build LArLight. It will take a while: gpvm machines are extremely slow (compared to the author's laptop, at least).
+Next, create a new MRB local repository. 
+You have to specify where to create it. At this time, we will set this to
+a shell environment variable, {\ttfamily \$MY\_LARSOFT}:
+\begin{lstlisting}
+    > export MY_LARSOFT=/uboone/app/users/$USER/mrb_larlight_dev
+    > source config/checkout_mrb_local.sh $MY_LARSOFT
+    > source config/setup_mrb_local.sh $MY_LARSOFT
+\end{lstlisting}
+This should checkout your local mrb repository which is currently empty.
+
+Now you are ready to checkout \DataScanner. But how can you set up this
+from next time? The following commands set up your configuration from 
+next time. You can add that to your configuration script:
+\begin{lstlisting}
+    > export MAKE_TOP_DIR=/uboone/app/users/$USER/LArLight
+    > source $MAKE_TOP_DIR/config/setup_mrb_lar.sh
+    > source $MAKE_TOP_DIR/config/setup.sh
+    > export MY_LARSOFT=/uboone/app/users/$USER/mrb_larlight_dev
+    > source $MAKE_TOP_DIR/config/setup_mrb_local.sh $MY_LARSOFT
+\end{lstlisting}
+
+
+
+\subsubsection{1. Checking Out and Bulding \DataScanner}
+OK, we assume you have gone through prerequisite and you have {\ttfamily \$MRB\_TOP} shell environment variable set. Here is how you can checkout \DataScanner.
+
+First, checkout LArLight, configure and compile. See Sec.\ref{chap:installation} for how-to. Then run the following command:
+\begin{lstlisting}
+    > source config/checkout_mrb_larlight.sh
+\end{lstlisting}
+This should create a directory:
+\begin{lstlisting}
+    $MRB_TOP/srcs/larlight/larlight_translator/DataScanner
+\end{lstlisting}
+Now you can build your local {\ttfamily mrb} repository:
+\begin{lstlisting}
+    > cd $MY_LARSOFT/build
+    > source mrb s
+    > mrb i -j4
+\end{lstlisting}
+Make sure, as said above, you have LArLight compiled before compiling \DataScanner. 
+This is because \DataScanner library needs to link against LArLight libraries. 
+If you see any compiler error message, feel free to contact the author.
+
+\subsubsection{2. Testing \DataScanner Build}
+We go over how to configure \DataScanner, but here is a blind run test to see if the build was successful or not.
+Go to \DataScanner directory:
+\begin{lstlisting}
+    > cd $MRB_TOP/srcs/larlight/larlight_translator/DataScanner
+\end{lstlisting}
+Let's run a simple 2 muon event generation.
+\begin{lstlisting}
+    > lar -c job/my_prodsingle.fcl
+\end{lstlisting}
+If you do see an error, this error is unrelated to \DataScanner.
+It is either (1) you have a problem with your LArSoft installation or (2) the author forgot to update this test fcl file. If you can debug and fix it, please do. Otherwise feel free to contact the author.
+
+If the above execution of {\ttfamily lar} goes well, then you should have generated {\ttfamily single\_gen\_uboone.root}. Next, we try running \DataScanner to convert TPC waveform into LArLight data format and store.
+\begin{lstlisting}
+    > lar -c job/scanner_tpcwf.fcl -s single_gen_uboone.root
+\end{lstlisting}
+If this goes well and you find {\ttfamily larlight\_tpcwf.root} output file, you have a working \DataScanner module!
+
+\subsubsection{3. Running \DataScanner}
+You have already run \DataScanner in {\bf Testing \DataScanner Build} section with a fcl file, {\ttfamily job/scanner\_tpcwf.fcl}. If you look at the top of this fcl file, you see that it imports another fcl file, {\ttfamily scanner\_base.fcl}. This is the fcl file to make a configuration of \DataScanner module. 
+
+In {\ttfamily job/scanner\_base.fcl}, you find there are two kinds of fcl parameters for \DataScanner module:
+\begin{itemize}
+\item fModName\_XXX
+\item fAssType\_XXX
+\end{itemize}
+where ``XXX'' is replaced with LArLight's \enum, {\ttfamily larlight::DATA::DATA\_TYPE}.
+
+The first parameter, {\ttfamily fModName\_XXX}, specifies the producer's module name for the data product ``XXX''. If you have more than one producer for the same data product (e.g. ``MCTruth'' for GENIE and CRY), you can specify both by separating the module name by ``:''. So you have an ability to store data products from more than one producer. For instance:
+\begin{lstlisting}
+    fModName_MCTruth: ``largeant:generator''
+\end{lstlisting}
+looks for {\ttfamily simb::MCTruth} produced by ``largeant'' and ``generator'' and convert them into LArLight data format.\\
+
+The second parameter, {\ttfamily fAssType\_XXX}, specifies the associated data objects to store. The value has to be LArLight's \enum, {\ttfamily larlight::DATA::DATA\_TYPE} in string name. Note that a producer may have stored more than one associated data products. You can specify more than one associated data type to be stored by separating data products by ``,''. Recall that, you have an ability to store the same data product from more than one producer. Different producer may have different association stored. You can separate a set of associations to be stored per producer by ``:''. 
+
+I know {\ttfamily fAssType\_XXX} is a bit complicated. So here's an example. Assume {\ttfamily SpacePoint} is generated by a producer named ``kazu'' and ``david''. These two producers used different hit and cluster finder algorithms. Here is an example to configure DataScanner to store the associations:
+\begin{lstlisting}
+    fModName_Bezier: ``kazu:david''
+    fAssType_Bezier: ``FFTHit,DBCluster:GausHit,FuzzyCluster''
+\end{lstlisting}
+If this is still confusing, feel free to contact the author.
+
+Here is a few points to remember:
+\begin{itemize}
+\item If you put an wrong producer name to {\ttfamily fModName\_XXX} value, you will get a corresponding LArLight data {\ttfamily TTree} filled with correct number of events. But each event will be empty.
+\item If you put an empty string to {\ttfamily fModName\_XXX} value, then you will not get any corresponding LArLight data stored (better this way to save disk space a bit).
+\item Association is stored only if a corresponding data product is stored. For instance, if you want to store associations to {\ttfamily FFTHit}, you must have specified {\ttfamily fModName\_FFTHit}.
+\end{itemize}
+
+Any question/comment/suggestion? As always feel free to contact the author.
+

@@ -1,0 +1,115 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{lgrind}
+\pagestyle{plain}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{cancel}
+\usepackage{appendix}
+\usepackage{fancyhdr}   
+\usepackage{url}
+\usepackage{path}
+\usepackage[dvipdfm]{graphicx}
+\usepackage{color}
+\usepackage{array}
+\usepackage{authblk}
+\usepackage[margin=2cm, head=2cm, foot=1cm]{geometry}
+\usepackage{verbatim}
+\setlength{\topmargin}{-2.5cm}
+\setlength{\textwidth}{17cm}
+\setlength{\oddsidemargin}{-0.5cm}
+\setlength{\evensidemargin}{-0.5cm}
+\setlength{\textheight}{22.5cm}
+\setlength{\footskip}{1cm}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\lstset{columns=fullflexible,basicstyle=\ttfamily}
+
+\input{./src/new_commands.tex}
+
+\begin{document}
+
+\title{LArLight \\ \vspace{0.1in} Simple LArSoft Data Analysis Tool}
+\date{March 12th, 2014}
+\author{Kazuhiro Terao, kazuhiro@nevis.columbia.edu}
+\maketitle
+
+\begin{abstract}
+LArLight is a simple \CPP + \ROOT analysis framework for LArSoft data. The goal of the framework is to provide (1) a generic \CPP \& \ROOT code development environment with build support on various platform, (2) an access to {\it ala} LArSoft data and utiltiy classes outside LArSoft framework, and (3) analysis framework for data processing. It fits somewhere between LArSoft and {\ttfamily AnalysisTree}. It is suitable for those who want to access details of LArSoft data and develop analysis/reconstruction code quickly. One of LArLight design principles is to be flexible and comfortable to developers. The framework builds on multiple platforms (Linux and OSX Darwin) and supports various ways to execute the compiled code (compiled executable or \CINT/\PyROOT interpreter scripts). It comes with a simple package generator that include a build system. It can be also used just as a \CPP play ground for students. Please feel free to use it for any purpose. The author is happy to be contacted for questions/suggestions anytime.
+\end{abstract}
+
+% Table of Contents
+\tableofcontents
+
+\newpage
+% How-to on setting things up
+\chapter{Installation}
+\label{chap:installation}
+\input{./src/Installation/main}
+
+% Overall introduction
+\chapter{Introdcution}
+\label{chap:introduction}
+\input{./src/Introduction/main}
+ 
+% Base package description
+\chapter{Core Package: Base}
+\label{chap:base}
+\input{./src/Base/main}
+
+% DataFormat package description
+\chapter{Core Package: DataFormat}
+\label{chap:dataformat}
+\input{./src/DataFormat/main}
+
+% Analysis package description
+\chapter{Core Package: Analysis}
+\label{chap:analysis}
+\input{./src/Analysis/main}
+
+% LArUtil package description
+\chapter{Core Package: LArUtil}
+\label{chap:larutil}
+\input{./src/LArUtil/main}
+
+% How-to's compilation
+\chapter{Generate \& Build Your Package}
+\label{chap:generate}
+\input{./src/Generate/main}
+
+% python and LArLight
+\chapter{Using LArLight in \python}
+\label{chap:pyroot}
+\input{./src/PyROOT/main}
+
+% LArSoft => LArLight converter
+\chapter{Where is LArLight Data File?}
+\label{chap:datafile}
+\input{./src/DataFile/main}
+
+% FAQ
+\chapter{FAQ}
+\label{chap:faq}
+\input{src/FAQ/main}
+
+\chapter{Releases}
+\label{chap:releases}
+\input{src/Releases/main}
+
+%
+%%% Appendix
+%
+%\appendix
+%\appendixpage
+
+% Bibliography
+\bibliographystyle{unsrt}
+
+\bibliography{LArLight}
+
+
+\end{document}

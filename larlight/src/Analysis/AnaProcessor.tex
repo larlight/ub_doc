@@ -1,0 +1,48 @@
+
+Analysis processor runs an event loop and is responsible for executing analysis units. You can attach as many analysis units as you wish. Those analysis units are executed in the respective order. You find {\ttfamily ana\_processor} is the actualy \CPP class that takes this role.
+
+Here is an analysis processor's task list in order:
+\begin{itemize}
+\item Start I/O using {\ttfamily storage\_manager}
+\item Call {\ttfamily initialize} function of attached analysis units
+\item Start event loop via {\ttfamily storage\_manager}
+\item For each event, call {\ttfamily analyze} of analysis units
+\item Call {\ttfamily finalize} of analysis units at the end of an event loop
+\item Close I/O
+\end{itemize}
+Before the 1st bullet point, a user has to (1) configure {\ttfamily ana\_processor} with file I/O information and (2) attach analysis units.
+
+\subsection{Example: Running Analysis Processor}
+Probably seeing an example code is much easier. Using, again, {\ttfamily KazuAna} analysis unit, here is an example \CINT code:
+\begin{lstlisting}
+{
+    gSystem->Load(``libAnalysis'');
+    // Create ana_processor instance
+    larlight::ana_processor my_proc;
+    // Set I/O mode, like storage_manager.
+    my_proc.set_io_mode(larlight::storage_manager::READ);
+    // Set analysis output file: not data output file.
+    my_proc.set_ana_output_file(``ana.out'');
+    // Set TDirectory name under which TTree resides
+    my_proc.set_input_rootdir(``scanner'');
+    // Now add input file(s)
+    my_proc.add_input_file(``hit_sample.root'');
+    
+    // Create analysis unit on heap
+    larlight::KazuAna* k = new larlight::KazuAna;
+    
+    // Attach
+    my_proc.add_process(k);
+
+    // Now run event loop
+    my_proc.run();
+}
+\end{lstlisting}
+The I/O configuration is very similar to what you learned about {\ttfamily storage\_manager}. As you guessed, this is because {\ttfamily ana\_processor} is using {\ttfamily storage\_manager} underneath.
+
+After the I/O configuration, like described before, you attach analysis unit(s). You can add as many as you wish.
+
+Finally, {\ttfamily ana\_processor::run()} starts a batch (uninterrupted) event processing. Another option is to use {\ttfamily ana\_processor::process\_event()} which process one event per function call. This can be useful when you want to do an interactive event processing.
+
+
+

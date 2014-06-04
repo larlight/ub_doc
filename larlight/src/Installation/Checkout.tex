@@ -1,0 +1,104 @@
+LArLight is maintained at the github.com public \git repository:
+\begin{lstlisting}
+https://github.com/larlight/LArLight
+\end{lstlisting}
+
+Accordingly you need to have \git installed on your machine.
+Once you have \git installed, you can use standard set of commands to checkout and commit your code.
+
+\subsection{Getting Write-Access to Commit Code}
+
+It is recommended that you set up such that you can commit your code to the repository.
+Here's a step to follow.
+
+\begin{enumerate}
+\item Make your github.com account if you don't have one to share with the author. It's free and easy.
+\item Notify the author with your account name. You will be added as a collaborator.
+\item It is handy to automatically access through ssh. For this, you need ssh key registered on your github.com account. If you have no idea and just want instruction to follow, try these steps:
+\begin{lstlisting}
+(on your terminal)
+> ssh-keygen -t rsa
+... (it asks you to set a password ... I set to empty but maybe a bad habit) ...
+> ls $HOME/.ssh/id\_rsa.pub
+\end{lstlisting}
+The content of id\_rsa.pub file is your ssh key. Go to your account setting page on github.com. There, you find an option to add SSH-Key. Add the id\_rsa.pub file content there. Now you can checkout/commit through ssh.
+\end{enumerate}
+
+\subsection{Checking Out}
+
+With github account and ssh-key set up, you can checkout the repository as follows.
+\begin{lstlisting}
+> git clone git@github.com:/larlight/LArLight MyLarLight
+\end{lstlisting}
+where ``MyLArLight'' is the name of local repository created under your currently working directory.
+
+Without ssh-key, you can still checkout:
+\begin{lstlisting}
+> git clone http://github.com/larlight/LArLight MyLArLight
+\end{lstlisting}
+
+\subsubsection{Checking Out ``development''}
+Now, the working branch is very unforunately not called ``develop'' but ``trunk''.
+Check out this branch.
+\begin{lstlisting}
+> cd MyLArLight
+> git checkout trunk
+\end{lstlisting}
+
+\subsubsection{Fixed Releases}
+You can also checkout a fixed release. 
+\begin{lstlisting}
+> cd MyLArLight
+> git checkout tags/$TAG
+\end{lstlisting}
+where {\ttfamily \$TAG} should be one of available tag names.
+Refer to Ch.\ref{chap:releases} for updates on each tags.\\
+
+
+Whether you use ``trunk'' or a fixed tag, you should find {\ttfamily MyLArLight/}\Core directory created. 
+This is the core LArLight package you will build regarding LArSoft data analysis.
+
+\subsection{What's in there?}
+Under the top directory, you should find the following list of contents.
+\begin{itemize}
+
+    \item \Core
+      \begin{itemize}
+          \item This directory contains the core part of LArLight framework including \Base, \DataFormat, \Analysis, and \LArUtil. Built by default (see Sec.\ref{sec:build}). 
+      \end{itemize}
+
+    \item \UserDev
+      \begin{itemize}
+          \item User code development area. This is where you can develop your code with a prepared package template generator.
+      \end{itemize}
+
+    \item {\ttfamily config}
+      \begin{itemize}
+          \item Where the user shell environment config script resides. Only important one is {\ttfamily setup.sh} (we will use it in Sec.\ref{sec:build}).
+      \end{itemize}
+
+    \item {\ttfamily Makefile}
+      \begin{itemize}
+          \item Where the build orders for {\ttfamily gmake} resides. Not to be modified by a user.
+      \end{itemize}
+
+    \item {\ttfamily lib}
+      \begin{itemize}
+          \item Where the built libraries (symbolic link though) will be gathered and reside. The configuration script adds this directory to your {\ttfamily LD\_LIBRARY\_PATH}.
+      \end{itemize}
+
+    \item {\ttfamily doc}
+      \begin{itemize}
+          \item Documentation directory containing doxygen script (see Sec.\ref{sec:build} for how to use it).
+      \end{itemize}
+
+    \item {\ttfamily README.txt}
+      \begin{itemize}
+          \item A brief README for LArLight (you don't need it as you are reading this manual).
+      \end{itemize}
+
+    \item \ttfamily{ASK\_QUESTIONS.txt}
+      \begin{itemize}
+          \item Lists list of authors for packages written under UserDev, in case you have a question and wish to contact.
+      \end{itemize}
+\end{itemize}

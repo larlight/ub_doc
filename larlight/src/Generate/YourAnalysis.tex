@@ -1,0 +1,108 @@
+
+Here, by \Analysis package, we mean a directory with a collection of analysis unit source code. So it is meant to use LArLight analysis framework. 
+
+Note that, if you do not want to be in the \Analysis framework, you can choose to generate an empty \CPP package instead of \Analysis package. See Sec.\ref{sec:simplecpp} to learn how to do this.
+
+\subsection{Generating Your Analysis Package}
+When you develop your code, you probably don't want to write your code under \Base, \DataFormat, \LArUtil, or \Analysis (i.e. sub directories under \Core directory) because those directories are basis of the framework and everyone shares them. So how can you work without disturbing others and, most importantly, without being disturbed? A simple solution is to generate your own analysis package and work in there. 
+
+There is a \python script that allows you to generate a new package:
+\begin{lstlisting}
+    > cd $MAKE_TOP_DIR/UserDev
+    > python bin/gen_ana_package MyAna
+\end{lstlisting}
+Executing above commands create a new directory called MyAna under \UserDev. There, you find {\ttfamily MyAna.cc} and {\ttfamily MyAna.hh} together with {\ttfamily GNUmakefile} which is necessary for building the package. Try:
+\begin{lstlisting}
+    > cd MyAna
+    > make -j4
+\end{lstlisting}
+This should compile your package and create {\ttfamily lib/MyAna.so} which includes \CINT dictionary. You just made your new analysis unit class, {\ttfamily MyAna}, whieh inherits from {\ttfamily ana\_base}! Your new analysis unit is accessible from \CINT or \PyROOT like any other classes in LArLight:
+\begin{lstlisting}
+    > root
+    root[0] gSystem->Load(``libMyAna'');
+    root[1] larlight::MyAna my_ana_unit;
+\end{lstlisting}
+Now go ahead and code up this analysis unit, and run with {\ttfamily ana\_processor}!
+
+\subsection{Run Your Analysis Unit: Compiled Executable}
+\label{sec:yourcompiledexe}
+In the generated package, you should see {\ttfamily bin} subdirectory. There, you find a {\ttfamily GNUmakefile}
+and {\ttfamily example.cc} (and also other things, but they are not relevant for this discussion).
+Simply try:
+\begin{lstlisting}
+    > cd bin
+    > make
+\end{lstlisting}
+This should compile {\ttfamily example.cc} and you should get a \CPP executable {\ttfamily example}.
+You can run this executable with an input file to run your analysis unit. Take a look at example.cc
+for an example of how to run {\ttfamily ana\_processor} with your analysis unit. If you want to quickly
+test, you can use an output of \DataFormat test routine, {\ttfamily simple\_write}, found under DataFormat/bin 
+directory.
+
+In future you might want to add anohter executable to be compiled here.
+Open your bin/GNUmakefile, and simple append your program name under the variable {\ttfamily PROGRAMS}.
+
+To be more exact, here is how you can do this. Let's say I want to compile my executable, {\ttfamily kazu.cc}.
+You place this source code under {\ttfamily bin} directory, and change the following line (I think line 18):
+\begin{lstlisting}
+PROGRAMS = example
+\end{lstlisting}
+to
+\begin{lstlisting}
+PROGRAMS = example kazu
+\end{lstlisting}
+and type ``make''. 
+You will have an executable {\ttfamily kazu} in the same directory if compilation is successful.
+
+\subsection{Run Your Analysis Unit: \PyROOT}
+\label{sec:yourrunscript}
+Like {\ttfamily example.cc} introduced in the previous subsection, there is an equivalent program
+written in \python using \PyROOT interface to import \CPP libraries. Under your package, you 
+should find {\ttfamily mac} directory which contains {\ttfamily example.py}.
+
+This is an equivalent of {\ttfamily bin/example.cc} but written in \python. You need a LArLight
+sample \ROOT file to run this program just like {\ttfamily example}. If you have a sample file
+called {\ttfamily trial.root}, you can run the program as follows.
+\begin{lstlisting}
+    > python mac/example.py trial.root
+\end{lstlisting}
+
+\subsection{Expanding Your Analysis Package}
+Like mentioned earlier in Sec.\ref{chap:analysis}, the design of analysis unit encourages you to write
+each analysis unit with a specific purpose. But that does not mean you cannot have more than one
+analysis unit per package (else you will have too many packages). Feel free to add more analysis unit 
+and/or generic \CPP classes to your package! There are handy scripts to do this for you as shown below.
+
+\subsubsection{Adding Analysis Unit to Your Package}
+There is a handy script to generate your new analysis unit under your {\ttfamily bin} directory. 
+Say I want to generate a new analysis unit called ``MyAnotherUnit'' under my package, ``MyAna''. 
+I can do:
+\begin{lstlisting}
+    > cd $MAKE_TOP_DIR/UserDev/MyAna
+    > python bin/gen_newana MyAnotherUnit
+\end{lstlisting}
+Now I can find {\ttfamily MyAnotherUnit.hh} and {\ttfamily MyAnotherUnit.cc} created under {\ttfamily MyAna}
+package. Also, if I look carefully, I see {\ttfamily LinkDef.h} and {\ttfamily MyAna-TypeDef.hh} are modified
+to include a new analysis unit. So I can just re-compile my package:
+\begin{lstlisting}
+    > make -j2
+\end{lstlisting}
+and my new analysis unit, {\ttfamily MyAnotherUnit}, is available just like the original analysis unit.
+
+\subsubsection{Adding Generic \CPP Class to Your Package}
+Analysis unit is just an interface to {\ttfamily storage\_manager}, a data handling I/O class, through
+{\ttfamily ana\_processor}. Sometimes you want to generate a completely generic \CPP class for very good
+reasons: to develop some algorithm that is independent of the framework (= easy portability to outside).
+
+Here is a script for you:
+\begin{lstlisting}
+    > cd $MAKE_TOP_DIR/UserDev/MyAna
+    > python bin/gen_empty_class MyEmptyClass
+\end{lstlisting}
+Now you should see {\ttfamily MyEmptyClass.hh} and {\ttfamily MyEmptyClass.cc} created under {\ttfamily MyAna}
+package. There also made appropriate modification to {\ttfamily LinkDef.h} and {\ttfamily MyAna-TypeDef.hh}
+so that you can just type:
+\begin{lstlisting}
+    > make -j2
+\end{lstlisting}
+to compile your new class. Now develop your awesome algorithm and make it a non-empty class ;)

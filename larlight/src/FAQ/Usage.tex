@@ -1,0 +1,62 @@
+List of usage related FAQs.
+
+\begin{itemize}
+
+\item[] {\bf OK so I think everything is compiled. What can I ``use''?}
+  \begin{itemize}
+    \item You can use what you compiled :) As to what you have compiled,
+      here's a brief list of things that are compiled by default.
+      \begin{itemize}
+        \item \Base package ... framework constants and base classes. See Ch.\ref{chap:base}.
+        \item \DataFormat package ... data product classes that mimic LArSoft data products + I/O interface with which you can run an event loop. See Ch.\ref{chap:dataformat}.
+        \item \Analysis package ... analysis framework, like EDAnalyzer/EDProducer in LArSoft. See Ch.\ref{chap:analysis}.
+        \item \LArUtil package ... {\it ala} LArSoft utitlity classes, described in Ch.\ref{chap:larutil}.
+      \end{itemize}
+  \end{itemize}
+
+\item[] {\bf Where can I find a sample LArLight \ROOT file?}
+  \begin{itemize}
+    \item You have three options: (1) generate on your own, (2) convert from LArSoft, or (3) use existing files. See Ch.\ref{chap:datafile}.
+  \end{itemize}
+
+\item[] {\bf How can I convert LArSoft file into LArLight format?}
+  \begin{itemize}
+    \item See Sec.\ref{sec:datafile:convert}.
+  \end{itemize}
+
+\item[] {\bf How can I generate my own package? Is there a template or something?}
+  \begin{itemize}
+    \item See Ch.\ref{chap:generate}.
+  \end{itemize}
+
+\item[] {\bf How can I run an event loop?}
+  \begin{itemize}
+    \item There are three options to run an event loop.
+      \begin{itemize}
+        \item Use a bare {\ttfamily TTree} instance and configure by yourself.
+        \item Use {\ttfamily storage\_manager}. See DataFormat/bin/simple\_read.cc for an example.
+        \item Use {\ttfamily ana\_processor}. See Analysis/bin/test\_simple\_ana.cc for an example.
+      \end{itemize}
+  \end{itemize}
+
+\item[] {\bf My file is big but I need only a few information. How can I speed up my event loop?}
+  \begin{itemize}
+    \item You have a switch to cancel reading in each data type, which can dramatically improve your I/O speed. Look up {\ttfamily storage\_manager::set\_data\_to\_read} attribute function.
+  \end{itemize}
+
+\item[] {\bf Can I run {\ttfamily ana\_processor} to process only one event?}
+  \begin{itemize}
+    \item Yes. Use {\ttfamily ana\_processor::process\_event} attribute.
+  \end{itemize}
+
+\item[] {\bf Can I store something other than the data products in an output file in an analysis unit? Say my TH1 histogram?}
+  \begin{itemize}
+    \item Yes. See Sec.\ref{sec:ana_base}.
+  \end{itemize}
+
+\item[] {\bf Why you recommend me \PyROOT more than \CINT?}
+  \begin{itemize}
+    \item Because it is more widely used across the world and simply better ;)
+  \end{itemize}
+
+\end{itemize}

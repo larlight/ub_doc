@@ -1,0 +1,25 @@
+Currently implemneted {\it ala} LArSoft utility classes include:
+\begin{itemize}
+  \item \DetectorProperties
+    \begin{itemize}
+      \item Utility class to access detector properties such as readout window size, sampling rate of a digitizer, etc. All functions available in LArSoft are implemented.
+    \end{itemize}
+
+  \item \LArProperties
+    \begin{itemize}
+      \item This is for liquid Argon properties such as density, temperature, electron life time, scintillation yield, etc. All functions available in LArSOft are implemented.
+    \end{itemize}
+
+  \item \Geometry
+    \begin{itemize}
+      \item This is for detector geometry. You can access a mapping between channel number to plane and wire number, nearest wire for a given position in the detector, wire intersection point, etc. The class is simplified by (a) taking assuming there is only one tpc and cryostat and (b) not using TGeoManager (i.e. the class is merely carrying constants to do most of useful calculation).
+    \end{itemize}
+
+  \item \GeometryUtilities
+     \begin{itemize}
+       \item This is a utility class mainly used by {\ttfamily ClusterParamsAlg} for shower 2D cluster reconstruction. It is equiped with useful functions to make an easy interpretation of detector geometry such as conversion of 3D point onto a 2D (time vs. wire) plane.
+     \end{itemize}
+
+\end{itemize}
+
+If you find any function to add, please ask the author. The point for utility classes are to be useful for you! In addition, if you are missing LArSoft utility class you wish to use, feel free to ask the author about this as well.

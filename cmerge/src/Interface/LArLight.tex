@@ -1,0 +1,20 @@
+Unfortunately there is no equivalent class of {\ttfamily ClusterMergeHelper} from {\larsoft} in {\larlight}. 
+Instead there is a {\ttfamily ClusterMerger} analysis unit class (i.e. inherits from {\ttfamily ana\_processor}, see Ref.\cite{LArLight}). There is a viewer application to compare input clusters, output (i.e. merged) clusters, and {\ttfamily MCShower} data products to debug merging/prohibit algorithms. These are described in this section.
+
+\subsection{{\ttfamily ClusterMerger}}
+As mentioned already, this is an analysis unit in {\larlight}. The usage is described in Ref.\cite{LArLight}. 
+By default, however, it does not save output cluster data product. 
+This option (i.e. saving the output) can be enabled by the function:
+\begin{lstlisting}
+  void SaveOutputCluster(bool)
+\end{lstlisting}
+with a boolean value {\ttfamily true} as an argument. 
+It can be disabled (though that is default) by providing {\ttfamily false}.
+This module is mainly used to run merging on the fly by {\ttfamily MergeViewer}, the class that runs merging algorithm on the fly and show the result on the display.
+That is why the saving out output data product is turned off by default.
+
+\subsection{Viewer Application Classes}
+This will be documented when the author finds time as it can be lengthy. 
+It is fully functional and used intensively by a few users. 
+Contact the author if interested in.
+

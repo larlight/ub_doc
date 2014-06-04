@@ -1,0 +1,72 @@
+List of build related FAQs.
+
+\begin{itemize}
+
+\item[] {\bf What's the minimum requirements to install LArLight?}
+  \begin{itemize}
+    \item See Sec.\ref{sec:prerequisite}.
+  \end{itemize}
+
+\item[] {\bf I installed \ROOT from macport. Can I still use LArLight?}
+  \begin{itemize}
+    \item Certainly. When you run {\ttfamily config/setup.sh}, it may
+      complain that you do not have {\ttfamily \$ROOTSYS} set if you use
+      release v2.1.1 or earlier. A walk around is to set {\ttfamily \$ROOTSYS}
+      to some non-zero value and re-run the configuration script. Note that,
+      in such case, you should set {\ttfamily \$PYTHONPATH} by yourself to
+      use \PyROOT (if you want to use \PyROOT).
+  \end{itemize}
+
+\item[] {\bf I own OSX version above 10.6 but I don't have \clang. What do I miss?}
+  \begin{itemize}
+    \item If you do not have \clang, unless you installed additional tools 
+      by yourself, you miss {\ttfamily c++11} feature. Contact the author 
+      and educate him otherwise!
+    \item One solution is to upgrade your system to OSX 10.9 Mavericks and
+      install Xcode 5.X. The author found Xcode 5.X is fine for code
+      development.
+    \item Another solution is to install either (1) install {\ttfamily lldb}
+      and \clang version above 3.1 (above 3.5 recommended), or (2)
+      install \gpp version above 4.3 (above 4.6 recommended). Contact      
+      the author for help / further assistance to enable {\ttfamily c++11}
+      in LArLight compilation.      
+  \end{itemize}
+
+\item[] {\bf Can I use OSX 10.5 or earlier with {\ttfamily c++11} support?}
+  \begin{itemize}
+    \item The author tested it is possible on 10.5.8 with Xcode 3.1.4. Earlier
+      version than this one is not tested. If you wish, please contact the author
+      and he will be willing to help.
+    \item The point is to have either recent-enough version of {\ttfamily lldb} 
+      or \gpp. For \gpp, {\ttfamily c++11} features are added from 4.3 (and later
+      versions have more features). The author took another choice and installed
+      {\ttfamily lldb} 3.1 with \clang 3.1. This was successful but took 5 hours 
+      to compile {\ttfamily lldb} 3.1 on his Core 2 duo from 2007.
+  \end{itemize}
+
+\item[] {\bf I have one of OSX 10.6, 10.7, or 10.8 with Xcode 4.X and seeing issues. Help?}
+  \begin{itemize}
+    \item Sure! The author does not have those machines and cannot test. So your
+      help will be essential to support those OS versions. Make sure you have Xcode 4.2
+      and up: this seems to be necessary to have \clang. Please contact the author.
+  \end{itemize}
+
+\item[] {\bf I think I installed LArLight. How can I test?}
+  \begin{itemize}
+    \item There are some test routines. See Sec.\ref{sec:simpletest}.
+  \end{itemize}
+
+\item[] {\bf How can I install \PyROOT? Do I need to re-compile LArLight?}
+  \begin{itemize}
+    \item See Sec.\ref{sec:pyroothelp} for a help on installation. No, you do not need to re-compile LArLight.
+  \end{itemize}
+
+\item[] {\bf Is there a class index list, like \ROOT web page?}
+  \begin{itemize}
+    \item You can generate your own \HTML file of class index. See Sec.\ref{sec:gendoxygen}.
+  \end{itemize}
+
+\end{itemize}
+
+
+

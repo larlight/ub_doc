@@ -1,0 +1,70 @@
+
+The {\cmtool} development effort is originated from EM shower reconstruction for MicroBooNE experiment, and it is an extension of existing tool set. The following is the brief list of packages or {\CPP} classes on which {\cmtool} depends.
+\begin{itemize}
+\item[] {\cru}
+    \begin{itemize}
+    \item larreco/RecoAlg/ClusterRecoUtil in {\larsoft}
+    \item UserDev/ClusterRecoUtil in {\larlight}
+    \end{itemize}
+\item[] {\geoutil}
+    \begin{itemize}
+    \item lardata/Utilities in {\larsoft}
+    \item core/LArUtil in {\larlight}
+    \end{itemize}
+\item[] {\ttfamily PxUtil}
+    \begin{itemize}
+    \item lardata/Utilities in {\larsoft}
+    \item core/LArUtil in {\larlight}
+    \end{itemize}
+\end{itemize}
+These items are (or should be if not yet) described in a separate document.
+The rest of this section briefly covers what they are without going into a technical detail.
+
+\subsection{{\ttfamily ClusterRecoUtil}}
+\label{sec:fmwk:external:cru}
+Reconstruction parameters for EM shower 2D cluster involves a lot more variety of parameters than those held in a 2D cluster data product defined by a framework ({\larsoft} or {\larlight}). {\cru} is a package that defines code for both calculation of and storage for those parameters. In particular, {\cmtool} uses following {\CPP} classes from {\cru}:
+\begin{itemize}
+\item {\ttfamily ClusterParamsAlg ... (\cpan)}
+  \begin{itemize}
+    \item {\cpan} is designed as both parameter computation algorithm and storage class, and is used along this design principle in {\cmtool}. In particular, {\cpan} is created one per input 2D cluster.
+  \end{itemize}
+\item {\ttfamily cluster\_param}
+  \begin{itemize}
+    \item {\ttfamily cluster\_param} is a utility storage class for important parameters computed by \cpan. A const reference can be retrieved from {\cpan} instance through {\ttfamily GetParams()} function call. Note, however, one should keep {\cpan} instance rather than {\ttfamily cluster\_params} as a cluster parameter data set (see {\cpan} description above).
+  \end{itemize}
+\item {\ttfamily CRUException}
+  \begin{itemize}
+    \item This is a very simple exception class derived from {\ttfamily std::exception}. It is used instead of {\ttfamily cet::exception} to avoid framework dependency. Only additional feature to the base class is that the argument string to the constructor is sent to standard output streem by overriden {\ttfamily std::exception::what()} function.
+  \end{itemize}
+\end{itemize}
+
+For details of all classes listed above, you should see Ref.\cite{ClusterRecoUtil}.
+
+\subsection{{\ttfamily PxUtil}}
+\label{sec:fmwk:external:pxutil}
+Both {\cru} and {\cmtool} are designed to be independent of an analysis framework of user's choice (in particular {\larlight} and {\larsoft}). 
+As mentioned in Sec.\ref{sec:fmwk:external:cru}, output of {\cpan} (i.e. cluster parameters) is stored with {\ttfamily cluster\_params} instance. 
+{\pxutil}, on the other hand, is used to define input data struct to {\cpan} (and hence {\cmtool} and {\cru} in general). {\pxutil} defines three data objects:
+\begin{itemize}
+  \item {\ttfamily PxPoint}
+    \begin{itemize}
+    \item represents 2D point and contains wire [cm], time [cm], and plane ID (unsigned char)
+    \end{itemize}
+  \item {\ttfamily PxHit}
+    \begin{itemize}
+    \item inhertis from {\ttfamily PxPoint} with an additional attribute to hold charge [ADC], representing 2D hit
+    \end{itemize}
+  \item {\ttfamily PxLine}
+    \begin{itemize}
+    \item represents 2D line and contains start and end coordinates, (wire [cm], time [cm]), with a plane ID (unsigned char)
+    \end{itemize}
+\end{itemize}
+
+It is a FMWK interface module's respnsibility to translate input data product into these format. In particular, this module must convert a vector of FMWK hit data product (= cluster) into a vector of {\pxhit}. This is discussed in FMWK interface chapter (see Ch.\ref{chap:fmwk_interface}).
+
+\subsection{{\ttfamily GeometryUtilities}}
+\label{sec:fmwk:external:geoutil}
+{\CPP} class {\geoutil} is a utility class that helps to retrieve detector geometry related information such as converting 3D point coordinate into a projected 2D coordinate on a given plane. 
+{\cmtool} uses {\geoutil} to interpret geometry related variables in full extent. 
+For development of any non-existing function that treats detector geometry information, it is encouraged to develop in {\geoutil} (and certainly not in {\cmtool}). 
+Please see Ref.\cite{GeometryUtilities} for more detailed documentation.

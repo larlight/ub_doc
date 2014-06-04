@@ -1,0 +1,170 @@
+\PyROOT is a \python interface to \ROOT classes. Basically it makes \ROOT classes
+available in your \python module, just like \ROOT \CINT knows about \ROOT classes.
+
+\subsubsection{Obtain \PyROOT}
+It is recommended to use \python 2.7 or later (see Sec.\ref{sec:prerequisite}). 
+You can refer to Sec.\ref{sec:pyroothelp} To install \PyROOT. Here we assume you have
+\PyROOT installed. Check your installation in your \python session:
+\begin{lstlisting}
+    $> python
+    >>> import ROOT
+    >>>
+\end{lstlisting}
+If you see an error with above commands, then you don't have \PyROOT properly set up.
+
+\subsection{Creating and Filling a Histogram in \PyROOT}
+Like mentioned above, with \PyROOT, you have an access to \ROOT classes in \python.
+Here is an example usage:
+\begin{lstlisting}
+    $> python
+    >>> from ROOT import TH1D
+    >>> h=TH1D(`h',`My Histogram; X-axis; Y-axis',100,0,10)
+    >>> h.Fill(5)
+    >>> h.Draw()
+\end{lstlisting}
+You should see {\ttfamily TCanvas} popped up with your histogram drawn on the pad.
+This is equivalent to the following \CINT commands:
+\begin{lstlisting}
+    $> root
+    root[0] TH1D* h = new TH1D(``h'',``My Histogram; X-axis; Y-axis'',100,0,10)
+    root[1] h->Fill(5)
+    root[2] h->Draw()
+\end{lstlisting}
+Let's take a break, back up and review basic facts here...
+\begin{itemize}
+
+    \item {\bf \ROOT classes can be imported into \python}
+      \begin{itemize}
+        \item As advertised. If you want to import {\it ALL} \ROOT classes, you can try
+          ``from ROOT import *'' though that will take a little bit longer time to import
+          a whole \ROOT classes (takes roughly 1 second).
+      \end{itemize}
+
+    \item {\bf \python does not need type declaration}
+      \begin{itemize}
+        \item When creating a histogram, ``{\ttfamily h}'', in \python, we did not specify it is
+          a type of TH1D object. Like \CPP {\ttfamily auto}, \python figures out the type of 
+          ``{\ttfamily h}'' from left-hand-side of ``\ttfamily{=}'' operator (i.e. it knows it's TH1D).
+      \end{itemize}
+
+    \item {\bf Everything in \python is a pointer (objects are created on {\ttfamily HEAP})}
+
+    \item {\bf \python object attributes are accessed by ``.''}
+      \begin{itemize}
+        \item Basically you can replace ``$\rightarrow$'' and ``::'' in \CPP with ``.''
+      \end{itemize}
+
+\end{itemize}
+Especially the fact that we do not need any type declaration is handy. This reduces lots of mistakes
+that can otherwise happen in \CINT where one can cast a pointer to wrong type.
+
+\subsection{{\ttfamily C}-array, Reference, and {\ttfamily STL} Container in \PyROOT}
+Including myself many people encounter an issue with the usage of {\ttfamily C}-array in \PyROOT.
+For instance this happens when your \CPP function takes a {\ttfamily double} pointer which is
+treated as an array in the function. Someone who struggled enough with \CPP probably come up and tell you: 
+don't write such function. This is because there's no way of knowing the size of provided array inside the 
+function, often causing invalid memory access. So it's not a good implementation for public functions. 
+
+Enough comments from me and THAT \CPP guy/gal: here's how you can use {\ttfamily C}-array in \python.
+We take an example of constructing \ROOT object {\ttfamily TGraph}.
+\begin{lstlisting}
+    > python
+    >>> from ROOT import *
+    >>> from array import array
+    >>> x_points = array('d',[0,1,2])
+    >>> y_points = array('d',[1,2,3])
+    >>> g=TGraph(len(x_points), x_points, y_points)
+    >>> g.SetMarkerStyle(22)
+    >>> g.SetMarkerSize(2)
+    >>> g.Draw(`AP')
+\end{lstlisting}
+As you can see, we used {\ttfamily array} object as if it is a {\ttfamily C}-array.
+The instantiation of {\ttfamily array} takes 2 arguments: 1st is the value type where `d' specifies
+a double-precision type while the 2nd argument specifies the length of array and values to be initialized to.
+The 2nd argument can be a list which is what I did. In above example, {\ttfamily x\_points} is initialized
+to an array of length 3 (as my input list has length 3) with elements initialized to 0, 1, and 2 in respective
+order (as those are my input list values). For {\ttfamily y\_points}, I initialized values to 1, 2, and 3.
+You should see three points from the {\ttfamily TGraph} drawn on canbas, showing (0,1), (1,2), and (2,3).
+
+Now, what about reference?
+You can simply provide a \python object just like you provide \CPP object when using pass-by-reference.
+But you might have a problem when the reference is a simple data type such as {\ttfamily double} or {\ttfamily int}.
+This is because \ROOT has a wrapper on those simple types. You can instead use \ROOT provided types.
+For instance, say I have a function called {\ttfamily FillDouble(double \&value)}. You can do:
+\begin{lstlisting}
+    >>> import ROOT
+    >>> my_value = ROOT.Double(0)
+    >>> FillDouble(my_value)
+    >>> print my_value
+\end{lstlisting}
+
+Finally, if you love using {\ttfamily STL} containers (I do), they are available through \PyROOT.
+Here's how you can do this:
+\begin{lstlisting}
+    > python
+    >>> import ROOT
+    >>> my_int_vector=ROOT.std.vector(int)()
+    >>> my_int_map=ROOT.std.map(int,int)()
+\end{lstlisting}
+The equivalent of \CPP's {\ttfamily std::vector<int>}, which is a specialization of template {\ttfamily std::vector} class
+with {\ttfamily double} type, is {\ttfamily ROOT.std.vector(int)} in the code above. Then I call a constructor, {\ttfamily ()},
+to create an object.
+
+If you have more questions abouve these items, contact the author and he is happy to expand this section.
+If you are into more cool statistical/mathematical tools, there are extension modules available in \python called 
+{\ttfamily numpy} and {\ttfamily scipy}. They are used in science research and private sector, and has a very
+robust and fast implementation of computing-intensive routines, probably better than \ROOT.
+
+\subsection{Creating an Array of Objects}
+A typical interpreter language like \python has a very useful array module that can hold a set
+of various objects. Here is an example \python script to make a list of histograms.
+\begin{lstlisting}
+    > python
+    >>> from ROOT import *
+    >>> myHistoArray=[]
+    >>> for x in xrange(10):
+    >>>     h=TH1D(`h%d' % x, `Histo %d' % x, 100,0,10)
+    >>>     myHistoArray.append(h)
+\end{lstlisting}
+Well, this can be done similarly in \CINT using {\ttfamily std::vector<TH1D*>}. So what is
+great about \python? Remember, \python list does not restrict a type of object to be held.
+This is because \python is completely object oriented language. See following:
+\begin{lstlisting}
+    > python
+    >>> from ROOT import *
+    >>> myDataCollection = []
+
+    >>> h=TH1D(`h',`Histogram',100,0,10)
+    >>> g=TGraph(10)
+    >>> v=TVector3(0,0,0)
+
+    >>> myDataCollection.append(h)
+    >>> myDataCollection.append(g)
+    >>> myDataCollection.append(v)
+
+\end{lstlisting}
+There is no need of preparing separate container per data type, nor preparing a dedicated
+data holder {\ttfamily class} or {\ttfamily struct}. Some \ROOT collection classes can 
+also do a similar thing. But recall \python knows each object's type without specifying it.
+This makes it very easy to access the list element. In above script, by
+{\ttfamily myDataCollection[0]}, \python knows this is TH1D while \CINT requires a correct
+type casting.\\
+
+Finally, remember \python is completely object oriented. So even a {\ttfamily class} is an
+object. You can make a list of {\ttfamily class} as shown below:
+\begin{lstlisting}
+    > python
+    >>> from ROOT import *
+    >>> myClassList = [TH1D, TGraph, TVector3]
+
+    >>> myVector = myClassList[2](0,0,0)
+    >>> myGraph  = myClassList[1](10)
+    >>> myHisto  = myClassList[0]('h','Histo',100,0,10)
+\end{lstlisting}
+It looks strange, doesn't it? But this feature of object orientation allows very abstract
+way of writing a code, and becomes handy when writing a driver script (i.e. a code that
+executes different programs and functions).\\
+
+... MORE DOCUMENTATION ONGOING ...
+
+
