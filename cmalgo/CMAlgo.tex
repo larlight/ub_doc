@@ -1,0 +1,70 @@
+\documentclass[a4paper,12pt]{report}
+\usepackage{lgrind}
+\pagestyle{plain}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{listings}
+\usepackage{cancel}
+\usepackage{appendix}
+\usepackage{fancyhdr}   
+\usepackage{url}
+\usepackage{path}
+\usepackage[dvipdfm]{graphicx}
+\usepackage{color}
+\usepackage{array}
+\usepackage{authblk}
+\usepackage[margin=2cm, head=2cm, foot=1cm]{geometry}
+\usepackage{verbatim}
+\setlength{\topmargin}{-2.5cm}
+\setlength{\textwidth}{17cm}
+\setlength{\oddsidemargin}{-0.5cm}
+\setlength{\evensidemargin}{-0.5cm}
+\setlength{\textheight}{22.5cm}
+\setlength{\footskip}{1cm}
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\bottomfraction}{0.8}
+\setcounter{topnumber}{2}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{4}
+\usepackage{hyperref}
+\usepackage{pdfpages}
+\lstset{columns=fullflexible,basicstyle=\ttfamily}
+
+\input{./src/new_commands.tex}
+
+\begin{document}
+
+\title{Documentation for CMAlgo Classes}
+%\date{March 12th, 2014}
+\author{
+  David Caratelli, dc2864@columbia.edu
+
+  David Kaleko, kaleko@nevis.columbia.edu
+
+  Kazuhiro Terao, kazuhiro@nevis.columbia.edu
+}
+\maketitle
+
+\begin{abstract}
+{\cmalgo} inherits from {\cbalgo}, defined in {\cmtool} framework (see Ref.\cite{CMTool}), and used for clustering of 2D clusters. This document describes a list of available {\cmalgo} to the best of our current knowledge. 
+\end{abstract}
+
+% Table of Contents
+\tableofcontents
+
+\newpage
+\chapter{Categories and List of {\cmalgo}}
+\label{chap:list}
+\input{./src/List/main}
+
+% We might want to make a chapter per algorithm? That would be fine, too.
+\chapter{Description of {\cmalgo}}
+\label{chap:desc}
+\input{./src/Description/main}
+
+% Bibliography
+\bibliographystyle{unsrt}
+
+\bibliography{CMAlgo}
+
+
+\end{document}
