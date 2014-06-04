@@ -11,8 +11,9 @@ all:
 	@rm -f $(DOC).toc
 	@rm -f $(DOC).log
 	@rm -f $(DOC).out
+	@rm -f $(DOC).aux
 
 clean:
 	@rm -f $(DOC).pdf
-	@rm -f $(DOC).aux
+
 
