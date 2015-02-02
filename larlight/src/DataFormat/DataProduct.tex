@@ -66,7 +66,7 @@ That being said, however, a mistake can break DataFormat which is shared among a
 So feel free to consult with the author.\\
 
 Alternative solution is to ask the author to add it. 
-Believe me, it's so simple and it won't take me > 10 minutes to add another on the list above.
+Believe me, it's so simple and it won't take me $>$10 minutes to add another on the list above.
 
 \subsection{Custom data product for dynamic variable declaration ... {\ttfamily user\_info}}
 
@@ -137,7 +137,7 @@ You provide the product ID of association as an argument.
 
 For instance, here's a code snipset to loop over associated hits for clusters to calculate charge sum per cluster and fill a histogram.
 \begin{lstlisting}
-    auto ass_info = ev_cluster.association(ev_hit.product_id());
+    auto ass_info = ev_cluster.association(ev_hit.id());
     double cluster_q=0;
     for(auto const& hit_indices : ass_info) {
       cluster_q = 0;
@@ -146,4 +146,19 @@ For instance, here's a code snipset to loop over associated hits for clusters to
       h->Fill(cluster_q);
     }
 \end{lstlisting}
-where {\ttfamily ev\_cluster} and {\ttfamily ev\_hit} are both variable names of {\ttfamily event\_cluster} and {\ttfamily event\_hit} data product class instances. 
+where {\ttfamily ev\_cluster} and {\ttfamily ev\_hit} are both variable names of {\ttfamily event\_cluster} and {\ttfamily event\_hit} data product class instances. \\
+
+It might be also helpful to remember a simple command to dump association information:
+\begin{lstlisting}
+    ev_cluster.list_association()
+\end{lstlisting}
+will output stored association information to the text output stream. \\
+
+If you wish to list a list of associated producer's name by specifying a data type, you can use
+{\ttfamily association\_keys(const data::DataType\_t type)} function. In particular, you can obtain
+the list of associated hit producer to a cluster like this:
+\begin{lstlisting}
+    for(auto const& producer : ev_cluster.association_keys(larlite::data::kHit))
+        std::cout<<``Hit producer: ``<<producer.c_str()<<std::endl;
+\end{lstlisting}
+Please contact the author to ask more questions or suggestions to expand this section.

@@ -10,15 +10,10 @@ Try:
 
 If above commands give you a message telling you to type ``make'', then your set up is complete.
 If that is not the case, ask for a help. The execution of this shell script sets necessary
-environment variables to build and use LArLite. In particular, it might be handy to remember three
-shell environment variables that should have been set by the script:
-\begin{itemize}
-   \item {\ttfamily \$LARLITE\_BASEDIR} points to the top LArLite directory
-   \item {\ttfamily \$LARLITE\_COREDIR} points to the \Core sub-directory where the framework core exists
-   \item {\ttfamily \$LARLITE\_USERDEVDIR} points to the \UserDev sub-directory where user's code will exist
-\end{itemize}
+environment variables to build and use LArLite. In particular, it might be handy to remember 
+aliases set by this script (see Sec.\ref{sec:configure} for details).
 
-OK... assuming you were succesful, try:
+Assuming you were succesful, try:
 \begin{lstlisting}
     > make -j4
 \end{lstlisting}

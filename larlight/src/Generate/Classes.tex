@@ -1,0 +1,65 @@
+
+As discussed in the previous section, one should populate a package with a group of \CPP classes.
+This section describes how to add various types of \CPP classes to your package.
+
+\subsection{Simple \CPP Class}
+Sometimes (rather often) you want to generate a completely generic \CPP class for very good reasons: to develop 
+some algorithm that is independent of the framework (= easy portability to outside LArLite).
+
+Here is a script for you:
+\begin{lstlisting}
+    > cd $LARLITE_USERDEVDIR/MyRepo/MyProject
+    > llgen_class_empty MyEmptyClass
+\end{lstlisting}
+Now you should see {\ttfamily MyEmptyClass.h} and {\ttfamily MyEmptyClass.cxx} created under {\ttfamily MyAna}
+package. There also made appropriate modification to {\ttfamily LinkDef.h} so that you can just type:
+\begin{lstlisting}
+    > make -j2
+\end{lstlisting}
+to compile your new class. Now develop your awesome algorithm and make it a non-empty class ;)
+
+\subsection{\anaunit Class}
+If you wish to generate an empty \anaunit class code (to be implemented by you), simply try:
+\begin{lstlisting}
+    > cd $LARLITE_USERDEVDIR/MyRepo/MyProject
+    > llgen_class_anaunit MyAna
+\end{lstlisting}
+
+Executing above commands create {\ttfamily MyAna.cxx} and {\ttfamily MyAna.h} (and an appropriate modification to {\ttfamily LinkDef.h}).
+Try:
+\begin{lstlisting}
+    > make -j4
+\end{lstlisting}
+You just made your new \anaunit class, {\ttfamily MyAna}, whieh inherits from {\ttfamily ana\_base}! 
+Your new \anaunit is accessible from \CINT or \PyROOT like any other classes in LArLite:
+\begin{lstlisting}
+    > root
+    root[0] larlite::MyAna my_ana_instance
+\end{lstlisting}
+Now go ahead and code up this analysis unit, and run with {\ttfamily ana\_processor}! 
+
+\subsubsection{Run Your Analysis Unit: \PyROOT}
+\label{sec:yourrunscript}
+There is an example \python run script for \anaunit under {\ttfamily mac} directory, called 
+{\ttfamily example\_anaunit.py}. You need a LArLite sample \ROOT file to run this program. 
+If you have a sample file, say {\ttfamily trial.root}, you can run the program as follows.
+\begin{lstlisting}
+    > python mac/example_anaunit.py trial.root
+\end{lstlisting}
+
+\subsection{\ertool Classes}
+Just as we exercised how to add a new \CPP class to a package, there's analogous python scripts to
+generate \ertool reconstruction algorithm, filter, and analysis class:
+\begin{lstlisting}
+    > cd $LARLITE_USERDEVDIR/MyRepo/MyProject
+    > llgen_class_erfilter Trial
+    > llgen_class_eralgo Trial
+    > llgen_class_erana Trial
+\end{lstlisting}
+Above three commands generate three \CPP classes: {\ttfamily ERFilterTrial}, {\ttfamily ERAlgoTrial}, and {\ttfamily ERAnaTrial}.
+These are implementation of base classes defined in \ertool, hence must be used with {\ttfamily ertool::Manager}.
+For details, see \ertool documentation (which is to come...)
+
+
+
+

@@ -1,0 +1,53 @@
+
+There is a configuration script to build and/or use LArLite:
+
+\begin{lstlisting}
+    config/setup.sh
+\end{lstlisting}
+which sets numbers of environment variables and aliases useful/necessary for LArLite.
+This script should be sourced each time a user logs into a machine before using/building LArLite.
+One can source this script multiple times per log-in.
+If you have multiple LArLite installation and would like to switch one to be used, simply call
+this script from the top directory of the one you wish to configure.
+
+\subsection{Shell Environment Variables}
+
+In particular, by sourcing this script, the following shell environment variables will be set:
+\begin{itemize}
+  \item {\ttfamily \$LARLITE\_BASEDIR} is set to the top directory in the repository
+  \item {\ttfamily \$LARLITE\_LIBDIR} is set to the {\ttfamily \$LARLITE\_BASEDIR/lib}
+  \item {\ttfamily \$LARLITE\_COREDIR} is set to the {\ttfamily \$LARLITE\_BASEDIR/core}
+  \item {\ttfamily \$LARLITE\_USERDEVDIR} is set to the {\ttfamily \$LARLITE\_BASEDIR/UserDev}
+  \item {\ttfamily \$LD\_LIBRARY\_PATH} is prepended with {\ttfamily \$LARLITE\_LIBDIR}
+  \item {\ttfamily \$DYLD\_LIBRARY\_PATH} is prepended with {\ttfamily \$LARLITE\_LIBDIR}
+  \item {\ttfamily \$LARLITE\_CXX} is set to either \clang or \gpp w/ \CPP11 flag
+\end{itemize}
+
+\subsection{Aliases}
+
+In addition, some useful aliases are set:
+\begin{itemize}
+  \item {\ttfamily cdtop} is ``{\ttfamily cd \$LARLITE\_BASEDIR}''
+  \item {\ttfamily maketop} is ``{\ttfamily make --directory=\$LARLITE\_BASEDIR}'' to which you can give an option flag such as ``{\ttfamily -j4} to compile w/ 4 threads
+  \item {\ttfamily llgen\_repository} is ``{\ttfamily python \$LARLITE\_BASEDIR/bin/gen\_repository}'' for generating a new user repository (see Ch.\ref{chap:generate}).
+  \item {\ttfamily llgen\_package} is ``{\ttfamily python \$LARLITE\_BASEDIR/bin/gen\_package}'' for generating a new user package under a specific repository (see Ch.\ref{chap:generate}).
+  \item {\ttfamily llgen\_class\_empty} is ``{\ttfamily python \$LARLITE\_BASEDIR/bin/gen\_class\_empty}'' for generating a new \CPP class under a package (see Ch.\ref{chap:generate}).
+  \item {\ttfamily llgen\_class\_anaunit} is ``{\ttfamily python \$LARLITE\_BASEDIR/bin/gen\_class\_anaunit}'' for generating a new analysis unit \CPP class under a package (see Ch.\ref{chap:analysis} and \ref{chap:generate}).
+  \item {\ttfamily llgen\_class\_eralgo} is ``{\ttfamily python \$LARLITE\_BASEDIR/bin/gen\_class\_eralgo}'' for generating a new \ertool algorithm class under a package (see Ch.\ref{chap:generate} and {\ertool} documentation).
+  \item {\ttfamily llgen\_class\_erfilter} is ``{\ttfamily python \$LARLITE\_BASEDIR/bin/gen\_class\_erfilter}'' for generating a new \ertool filter class under a package (see Ch.\ref{chap:generate} and {\ertool} documentation).
+  \item {\ttfamily llgen\_class\_erana} is ``{\ttfamily python \$LARLITE\_BASEDIR/bin/gen\_class\_erana}'' for generating a new \ertool analysis class under a package (see Ch.\ref{chap:generate} and {\ertool} documentation).
+\end{itemize}
+
+\subsection{{\ttfamily USER\_MODULE}}
+By default, sourcing {\ttfamily config/setup.sh} will configure to build the LArLite {\ttfamily core} package, 
+which includes LArLite's framework constants, data format, and analysis toolkit. In addition, one can specify
+various directories under \UserDev to be built by specifying then in {\ttfamily USER\_MODULE} shell environment
+variable {\bf prior to} sourcing the script. For instance:
+
+\begin{lstlisting}
+    > export USER_MODULE=``BasicTool''
+    > source config/setup.sh
+    > make -j4
+\end{lstlisting}
+
+will configure to build the {\ttfamily core} and {\ttfamily BasicTool} under \UserDev directory.

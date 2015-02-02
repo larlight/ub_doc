@@ -1,18 +1,18 @@
 
-An analysis unit is a \CPP class that inherits from {\ttfamily ana\_base} class. 
-This base class has three important functions that would concern your analysis unit code development.
+An \anaunit is a \CPP class that inherits from {\ttfamily ana\_base} class. 
+This base class has three important functions that would concern your \anaunit code development.
 \begin{lstlisting}
     bool ana_base::initialize()
     bool ana_base::analyze(larlite::storage_manager* storage)
     bool ana_base::finalize()
 \end{lstlisting}
-As it is described in the next subsection, an analysis unit is held by analysis processor which runs an event loop.
+As it is described in the next subsection, an \anaunit is held by analysis processor which runs an event loop.
 
 \subsection{Flow of Function Calls}
 
 \subsubsection{{\ttfamily initialize()}}
-The attached analysis unit's {\ttfamily initialize} function is called only once at the beginning of an event loop. 
-If the analysis unit returns {\ttfamily false} at that point, event loop will not be even started by analysis processor.
+The attached \anaunit's {\ttfamily initialize} function is called only once at the beginning of an event loop. 
+If the \anaunit returns {\ttfamily false} at that point, event loop will not be even started by analysis processor.
 
 \subsubsection{{\ttfamily analyze(storage\_manager* storage)}}
 Then for each event, analysis processor calls {\ttfamily analyze} function. Event-by-event analysis code should be implemented within this function. Access to an event's data information is done through {\ttfamily storage\_manager} pointer. The return value of {\ttfamily analyze} function has a meaning if one enables ``filter mode'' for running {\ttfamily ana\_processor}. See Sec.\ref{sec:analysis:filtermode} for details.
@@ -29,11 +29,11 @@ This is sometimes confusing, but there are two kinds of outputs you can store:
 
 To store modified/new data product (i.e. classes defined in Sec.\ref{sec:dataproduct}), simply use provided {\ttfamily storage\_manager} pointer that is given as a function argument of {\ttfamily analyze}. 
 
-To store your analysis output \ROOT objects, like your {\ttfamily TH1} histogram, {\ttfamily TGraph} and such, use {\ttfamily ana\_base::\_fout} attribute. As it is defined in {\ttfamily ana\_base}, all analysis units should have it. This is a {\ttfamily TFile} pointer provided by analysis processor before calling {\ttfamily initialize} function. 
+To store your analysis output \ROOT objects, like your {\ttfamily TH1} histogram, {\ttfamily TGraph} and such, use {\ttfamily ana\_base::\_fout} attribute. As it is defined in {\ttfamily ana\_base}, all \anaunit should have it. This is a {\ttfamily TFile} pointer provided by analysis processor before calling {\ttfamily initialize} function. 
 
 The analysis output file (i.e. {\ttfamily TFile} object to which {\ttfamily \_fout} points) is separately created by analysis processor if a user configured to create it. So your object will be stored in a separate output \ROOT file.
 
-For example, let's say I have analysis unit called {\ttfamily KazuAna} and it has {\ttfamily TH1D} pointer called {\ttfamily h1} with real object on the heap. To save this object in an analysis output file, I can write the following {\ttfamily finalize} function.
+For example, let's say I have \anaunit called {\ttfamily KazuAna} and it has {\ttfamily TH1D} pointer called {\ttfamily h1} with real object on the heap. To save this object in an analysis output file, I can write the following {\ttfamily finalize} function.
 \begin{lstlisting}
     bool KazuAna::finalize() {
         if(_fout) {
@@ -45,15 +45,15 @@ For example, let's say I have analysis unit called {\ttfamily KazuAna} and it ha
 Note that:
 \begin{itemize}
 \item Checking whether {\ttfamily \_fout} is valid or not will avoid code crash in case analysis processor is configured not to create output file
-\item Since {\ttfamily \_fout} is shared among all analysis units, no unit should not selfishly close the file.
+\item Since {\ttfamily \_fout} is shared among all \anaunit, no unit should not selfishly close the file.
 \end{itemize}
 
 
 \subsection{Why Unit Modulation?}
 I hope we agree it is better to have multiple functions rather than one function with thousands of lines of code. 
 The basic idea is same: modulation helps to maintaine code and also sharing/reusing the code.
-For this reason, it is better to restrict one analysis unit does one thing.
-It does not mean one analysis unit should create more than one histogram. 
+For this reason, it is better to restrict one \anaunit does one thing.
+It does not mean one \anaunit should create more than one histogram. 
 But it means to have a single or a few words answer to the question, ``what does this unit do?''
 Don't continue your ``a few words answer'' by saing ``it also does...''. That's cheating ;)
 
@@ -63,7 +63,7 @@ You are given a digitized waveform, and the goal is to reconstruct a pulse from 
 Unit modulation means, in this example, you write one module to reconstruct a pulse and a separate module to calculate number of photo-electrons from charge in a pulse.
 So if someone asks what each module does, your answers are: ``pulse reconstruction'' and ``charge to photo-electron conversion''.
 
-What we benefit from this? Imagine tomorrow the smarter you come up with a better reconstruction algorithm but you have to prove it is better. Instead of copy and paste the entire code, you can simply add another pulse reconstruction unit in your package. Then you can run your analysis by switching one unit to the other to compare the result. Your analysis unit to convert charge into photo-electrons is undisturbed. You do not have to do any ``copy and paste'' of code, which often introduces a bug in your program. This is the benefit you get.
+What we benefit from this? Imagine tomorrow the smarter you come up with a better reconstruction algorithm but you have to prove it is better. Instead of copy and paste the entire code, you can simply add another pulse reconstruction unit in your package. Then you can run your analysis by switching one unit to the other to compare the result. Your \anaunit to convert charge into photo-electrons is undisturbed. You do not have to do any ``copy and paste'' of code, which often introduces a bug in your program. This is the benefit you get.
 
 Even possibly greater benefit: tomorrow you are doing TPC waveform analysis and you want to use a similar way of reconstructing a pulse, though there is no sense of ``photo-electron'' involved in this case. By doing unit modulation you can use exact same pulse reconstruction unit to perform the task.
 
