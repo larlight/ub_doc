@@ -1,4 +1,4 @@
-All of \LArUtil classes are defined under {\ttfamily larutil} namespace, which is different from the rest of core packages. The author is not sure why it was done so. If you think they should be moved into {\ttfamily larlight} namespace, tell him to do so.
+All of \LArUtil classes are defined under {\ttfamily larutil} namespace, which is different from the rest of core packages. The author is not sure why it was done so. If you think they should be moved into {\ttfamily larlite} namespace, tell him to do so.
 
 There are two features that all utility classes in \LArUtil shared. These are (1) singleton design pattern, and (2) use \ROOT {\ttfamily TTree} to instantiate data members. These are described briefly in the following subsections.
 
@@ -18,7 +18,7 @@ or in \PyROOT
 \end{lstlisting}
 You might say ``I worry about overhead of calling {\ttfamily GetME()} function each time I need it.'' First, this won't take even a micro-second. If your code takes more than 10 micro-seconds to run per this function call, you can discard such worry! Secondly, feel free to store {\ttfamily larutil::Geometry} const pointer so that you don't have to call {\ttfamily GetME()}. But never delete it (i.e. respect it should be const)! 
 
-As you see above, \LArUtil classes are supported in \CINT and \PyROOT just like other LArLIght classes. Accessing the geometry or detector property information is, therefore, very starightforward. When you forget how many TPC channels exist in the detector, just try:
+As you see above, \LArUtil classes are supported in \CINT and \PyROOT just like other LArLite classes. Accessing the geometry or detector property information is, therefore, very starightforward. When you forget how many TPC channels exist in the detector, just try:
 \begin{lstlisting}
     > root
     root[0] gSystem->Load(``libLArUtil'')
@@ -41,7 +41,7 @@ Or maybe getting the view type of TPC channel 5000
     root[0] gSystem->Load(``libLArUtil'')
     root[1] Double_t xyz[3]={0.}
     root[2] larutil::Geometry::GetME()->View(5000)
-    (const enum larlight::GEO::View_t)2
+    (const enum larlite::geo::View_t)2
 \end{lstlisting}
 
 \subsection{Support for Other Experiments}
@@ -51,7 +51,7 @@ Currently another experiment supported is ArgoNeuT. To reconfigure all utilities
 \begin{lstlisting}
     > root
     root[0] gSystem->Load(``libLArUtil'')
-    root[1] larutil::LArUtilManager::Reconfigure(larlight::GEO::kArgoNeuT)
+    root[1] larutil::LArUtilManager::Reconfigure(larlite::geo::kArgoNeuT)
 \end{lstlisting}
 The class {\ttfamily LArUtilManager} has a single static function that takes experiment type, which is an {\ttfamily enum} defined under {\ttfamily core/Base/GeoConstants.hh}, and reconfigure all utility classes. If the input experiment type is same as what is already set, then it does nothing. You can call above function at the beginning of your script or {\ttfamily main} function, and the rest of code execution uses the specified experiment type.
 

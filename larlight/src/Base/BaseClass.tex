@@ -1,6 +1,6 @@
 
 There are two basic classes used throughout the framework: 
-(1) {\ttfamily larlight\_base} and (2) {\ttfamily Message}.
+(1) {\ttfamily larlite\_base} and (2) {\ttfamily Message}.
 The first one is used as the base class of all framework classes except for data products.
 The second class is a very simple {\ttfamily std::cout} and {\ttfamily std::cerr} message carriers.\\
 
@@ -11,10 +11,10 @@ use a color-coded message scheme.
 This is actually not a logger.
 It does only one thing: color code the message and add a prefix based on message level.
 
-\subsection{Framework Base: {\ttfamily larlight\_base}}
+\subsection{Framework Base: {\ttfamily larlite\_base}}
 This is the base class of all framework classes except for data products.
 It comes with a verbosity level and makes a use of {\ttfamily Message} class
-to deliver messages. It is implemented with {\ttfamily larlight\_base::print} attribute
-which can mask out some low level messages based on the message level (i.e. {\ttfamily MSG::Level}).
+to deliver messages. It is implemented with {\ttfamily larlite\_base::print} attribute
+which can mask out some low level messages based on the message level (i.e. {\ttfamily msg::Level}).
 
 

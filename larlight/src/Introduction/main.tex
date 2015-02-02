@@ -1,9 +1,9 @@
 
-LArLight was originally developed for Nevis 2013 summer students as a \CPP development play ground.
+LArLite was originally developed for Nevis 2013 summer students as a \CPP development play ground.
 Then it was expanded to perform analysis on ala LArSoft data products. 
 This section briefly describes what it is about in the author's poor English skill.
 
-\section{Spirits Behind LArLight}
+\section{Spirits Behind LArLite}
 There are some points that the author have kept in mind when he has not forgotten.
 \begin{itemize}
 \item Easy to checkout, configure and compile on Linux/Darwin
@@ -13,42 +13,42 @@ There are some points that the author have kept in mind when he has not forgotte
 \item Help user's code development as much as possible
 \item Allow flexibility in users' coding: anyone can be a developper
 \end{itemize}
-When you find a contradiction while using LArLight, please (1) fix it if you can or (2) speak up and ask to make it better! 
+When you find a contradiction while using LArLite, please (1) fix it if you can or (2) speak up and ask to make it better! 
 
 \section{What Is LarLight For?}
 Right, what is it for?
 Originally it was for \CPP + \ROOT code development. This remains same now.
 It became capable of doing ala LArSoft data analysis. This is an on-going effort to become better.
-Following subsections describe briefly how LArLight support these points.
-After those, IMHO the strength of LArLight is described.\\
+Following subsections describe briefly how LArLite support these points.
+After those, IMHO the strength of LArLite is described.\\
 
-It is important to note here the author has no intention to replace LArSoft by LArLight. 
+It is important to note here the author has no intention to replace LArSoft by LArLite. 
 Please do not even start arguing about this with him. You make him sad.
 
 \subsection{For Simple \CPP Code Development}
-You can forget about doing LArSoft analysis (or even about microboone) and use LArLight to develop a generic \CPP + \ROOT project. This is just executing a one line command to generate your package, and type ``make''. See Sec.\ref{sec:simplecpp} for an example.
+You can forget about doing LArSoft analysis (or even about microboone) and use LArLite to develop a generic \CPP + \ROOT project. This is just executing a one line command to generate your package, and type ``make''. See Sec.\ref{sec:simplecpp} for an example.
 
 \subsection{For ala LArSoft data analysis}
-LArLight is equipped with following features to perform ala LArSoft data analysis.
+LArLite is equipped with following features to perform ala LArSoft data analysis.
 \begin{itemize}
 \item Data structure capable to store LArSoft data contents
-\item LArSoft module that converts data from LArSoft to LArLight \ROOT file
+\item LArSoft module that converts data from LArSoft to LArLite \ROOT file
 \item Dedicated I/O interface, like LArSoft's {\ttfamily art::Event}
 \item Analysis framework, like LArSoft's {\ttfamily art::EDAnalyzer/EDProducer}
 \end{itemize}
 
-In case you are wondering why LArLight can do such things... in the end of the day, what we are analyzing/reconstructing is just a group of integers and floating points.
+In case you are wondering why LArLite can do such things... in the end of the day, what we are analyzing/reconstructing is just a group of integers and floating points.
 Processing of those are certainly supported in a standard \CPP and \ROOT framework.
-So surely anyone can write a simple framework like LArLight to process data of our interest.
+So surely anyone can write a simple framework like LArLite to process data of our interest.
 
-\subsection{Strength: Why Using LArLight?}
+\subsection{Strength: Why Using LArLite?}
 
-IMHO LArLight is useful because:
+IMHO LArLite is useful because:
 \begin{itemize}
 \item[] {\bf No extra dependency like {\ttfamily art}}
   \begin{itemize}
     \item It means the framework build on my laptop. It builds fast, and easy to debug errors as it only depends on standard \CPP and \ROOT which most of us are familiar with. These imply to a comfortable environment for code development.
-    \item It means your code in LArLight is {\bf easily transportable to any framework with \CPP and \ROOT dependencies}, including LArSoft or your future experiments!
+    \item It means your code in LArLite is {\bf easily transportable to any framework with \CPP and \ROOT dependencies}, including LArSoft or your future experiments!
   \end{itemize}
 \item[] {\bf Capability of fast data processing }
   \begin{itemize}
@@ -69,25 +69,25 @@ IMHO LArLight is useful because:
   \end{itemize}
 \end{itemize}    
 
-LArLight probably fits a best bridge between LArSoft data and simple {\ttfamily AnalysisTree}. 
+LArLite probably fits a best bridge between LArSoft data and simple {\ttfamily AnalysisTree}. 
 But it is not a replacement of either.
 
 \subsection{It is NOT a Replacement of Anything}
-LArLight is not a replacement of any software framework developed before. 
+LArLite is not a replacement of any software framework developed before. 
 
 Obviously it's not a replacement of LArSoft.
 The author refuses to discuss about this. 
 
 Even if you develop an amazing GUI interface for viewing events, it will not be a replacement of {\ttfamily Argo}.
-{\ttfamily Argo} does not require data product format, and hence is much more flexible than LArLight in that sense.
-The purpose of LArLight having ala LArSoft data products is to do detailed analysis AND to provide, like said before,
+{\ttfamily Argo} does not require data product format, and hence is much more flexible than LArLite in that sense.
+The purpose of LArLite having ala LArSoft data products is to do detailed analysis AND to provide, like said before,
 a comfortable environment for code development.
 
 Can it be a replacement of {\ttfamily AnalsisTree}? 
 No. Not at least in the author's understanding of what {\ttfamily AnalysisTree} is for.
 The {\ttfamily AnalysisTree} is meant to be a simple {\ttfamily TTree} that stores higher level physics variables you know you are interested in. Hence it is not meant to be used for developing complicated algorithms that require more basic level information in data.
 
-If {\ttfamily AnalysisTree} is to access very high level analysis information outside LArSoft, LArLight is suitable for accessing full detail of information outside LArSoft. In otherwords, one can produce {\ttfamily AnalysisTree} from LArLight. But again, it is not a replacement.
+If {\ttfamily AnalysisTree} is to access very high level analysis information outside LArSoft, LArLite is suitable for accessing full detail of information outside LArSoft. In otherwords, one can produce {\ttfamily AnalysisTree} from LArLite. But again, it is not a replacement.
 
 
 

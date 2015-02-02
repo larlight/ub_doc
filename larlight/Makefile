@@ -1,5 +1,5 @@
 
-DOC=LArLight
+DOC=LArLite
 
 all:
 	@pdflatex $(DOC).tex

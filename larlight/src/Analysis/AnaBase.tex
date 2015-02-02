@@ -3,7 +3,7 @@ An analysis unit is a \CPP class that inherits from {\ttfamily ana\_base} class.
 This base class has three important functions that would concern your analysis unit code development.
 \begin{lstlisting}
     bool ana_base::initialize()
-    bool ana_base::analyze(larlight::storage_manager* storage)
+    bool ana_base::analyze(larlite::storage_manager* storage)
     bool ana_base::finalize()
 \end{lstlisting}
 As it is described in the next subsection, an analysis unit is held by analysis processor which runs an event loop.
@@ -15,7 +15,7 @@ The attached analysis unit's {\ttfamily initialize} function is called only once
 If the analysis unit returns {\ttfamily false} at that point, event loop will not be even started by analysis processor.
 
 \subsubsection{{\ttfamily analyze(storage\_manager* storage)}}
-Then for each event, analysis processor calls {\ttfamily analyze} function. Event-by-event analysis code should be implemented within this function. Access to an event's data information is done through {\ttfamily storage\_manager} pointer. The return value of {\ttfamily analyze} function is currently unused. Your idea to expand the framework using this portion is certainly welcome. One example is to use this return boolean to implement a ``filter unit''.
+Then for each event, analysis processor calls {\ttfamily analyze} function. Event-by-event analysis code should be implemented within this function. Access to an event's data information is done through {\ttfamily storage\_manager} pointer. The return value of {\ttfamily analyze} function has a meaning if one enables ``filter mode'' for running {\ttfamily ana\_processor}. See Sec.\ref{sec:analysis:filtermode} for details.
 
 \subsubsection{{\ttfamily finalize()}}
 At the end of event loop, {\ttfamily finalize} function is called. This is where you might want to do final wrap-up of your analysis.

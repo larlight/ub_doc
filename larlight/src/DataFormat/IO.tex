@@ -1,43 +1,56 @@
 
-LArLight uses \ROOT file as storage because the author is not smart enough to write his own streamer.
-In a LArLight \ROOT file, you find {\ttfamily TTree} per stored data type (i.e. {\ttfamily larlight::DATA::DATATYPE}).
-A standard approach of using {\ttfamily TTree::SetBranchAddress} works very easily, but LArLight also has dedicated I/O interface to make our life easier (at least that was the author's intention).\\
+LArLite uses \ROOT file as storage because the author is not smart enough to write his own streamer.
+In a LArLite \ROOT file, you find {\ttfamily TTree} per stored data type (i.e. {\ttfamily larlite::data::DataType\_t}) and per data product producer's name.
+A standard approach of using {\ttfamily TTree::SetBranchAddress} works very easily, but LArLite also has dedicated I/O interface to make our life easier (at least that was the author's intention).\\
 
 If you did not find the I/O functionality you want in here, please suggest and help us to improve our interface ;)
 
-\subsection{LArLight \ROOT file structure}
-In LArLight \ROOT file, TTrees are created per stored data type. 
-You find, for instance, ``ffthit\_tree'' if  {\ttfamily larlight::DATA::FFTHit} data type is stored.
+\subsection{LArLite \ROOT file structure}
+In LArLite \ROOT file, TTrees are created per stored data type and producer's name. 
+You find, for instance, ``hit\_gaushit\_tree'' if  {\ttfamily larlite::data::kHit} data type is stored by a producer ``gaushit''.
 
 \subsubsection{Accessing ``by hand''}
 Here's some simple commands you can try to access in \CINT (or \PyROOT) session:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libDataFormat'');
-    root[1] TFile* f = TFile::Open(``sample.root'',``READ'');
-    root[2] TTree* t = (TTree*)(f->Get(``ffthit\_tree''));
-    root[3] t->Show(0);
+    root[0] TFile* f = TFile::Open(``sample.root'',``READ'');
+    root[1] TTree* t = (TTree*)(f->Get(``hit_gaushit_tree''));
+    root[2] t->Show(0);
 \end{lstlisting}
 Similarly you can try {\ttfamily TTree::Scan} or {\ttfamily TTree::Draw} function.
 Note that \ROOT supports class attribute access upon \CINT dictionary loading.
-Since we do have \CINT dictionary, you can try accessing functions like {\ttfamily larlight::hit::Charge()} in the string argument you provide to those {\ttfamily TTree} functions.\\
+Since we do have \CINT dictionary, you can try accessing functions like {\ttfamily larlite::hit::Charge()} in the string argument you provide to those {\ttfamily TTree} functions.\\
 
 Of course, you can also invoke {\ttfamily TTree::SetBranchAddress} to retrieve data product class pointer.
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libDataFormat'');
-    root[1] TFile* f = TFile::Open(``sample.root'',``READ'');
-    root[2] TTree* t = (TTree*)(f->Get(``ffthit_tree''));
-    root[3] larlight::event_hit* my_hit_v = new larlight::event_hit;
-    root[4] t->SetBranchAddress(``ffthit_branch'',my_hit_v);
-    root[5] t->GetEntry(0);
-    root[6] my_hit_v->size();
+    root[0] TFile* f = TFile::Open(``sample.root'',``READ'');
+    root[1] TTree* t = (TTree*)(f->Get(``hit_gaushit_tree''));
+    root[2] larlite::event_hit* my_hit_v = new larlite::event_hit;
+    root[3] t->SetBranchAddress(``hit_gaushit_branch'',my_hit_v);
+    root[4] t->GetEntry(0);
+    root[5] my_hit_v->size();
 \end{lstlisting}
-But this is tedious. Let's use I/O interface class.
+But this is tedious and the author personally hates it.
+Easier method is to use PyROOT:
+\begin{lstlisting}
+    > python
+    >>> from ROOT import *
+    >>> ch = TChain(`hit_gaushit_tree',`')
+    >>> ch.AddFile(`sample.root')
+    >>> ch.GetEntry(0)
+    >>> ch.hit_gaushit_branch.size()
+\end{lstlisting}
+As you can see, significantly less amount of typing. 
+
+Doing this for all Trees and keeping track of entry on each Tree is, however, very tedious.
+In addition, accessing data event by event interactively is very time consuming (interpreters are not meant to be fast).
+If you want a fast way to access, you can compile an executable to loop over your TTree.
+But if you want a fast {\it and} easy way, you can use LArLite use I/O interface class.
 
 \subsection{Framework I/O Interface: {\ttfamily storage\_manager}}
 
-{\ttfamily storage\_manager} is the LArLight's \CPP interface class for \ROOT file I/O.
+{\ttfamily storage\_manager} is the LArLite's \CPP interface class for \ROOT file I/O.
 The work flow is the following:
 \begin{itemize}
 \item Configure (tell input and/or output file information)
@@ -47,15 +60,14 @@ The work flow is the following:
 \end{itemize}
 
 We go over some examples in the followings. I assume we have an example file, ``hit\_sample.root''
-which contains {\ttfamily larlight::DATA::FFTHit} type data product.
+which contains {\ttfamily larlite::data::kHit} type data product produced by ``gaushit'' producer.
 
 \subsubsection{Simple Example: Opening an input file}
 Here's a \CINT script to configure/use {\ttfamily storage\_manager} to open a \ROOT file.
 \begin{lstlisting}
 {
-    gSystem->Load(``libDataFormat'');
-    larlight::storage_manager mgr;
-    mgr.set_io_mode(mgr.READ);                // Option: READ, WRITE, BOTH
+    larlite::storage_manager mgr;
+    mgr.set_io_mode(mgr.kREAD);               // Option: kREAD, kWRITE, kBOTH
     mgr.add_in_filename(``hit_sample.root''); // Specify input file name
     mgr.set_in_rootdir(``'');                 // Specify TDirectory name if there exists
     if(!mgr.open()) {
@@ -73,9 +85,8 @@ Here's a \CINT script to configure/use {\ttfamily storage\_manager} to open a \R
 This is an example to run an event loop.
 \begin{lstlisting}
 {
-    gSystem->Load(``libDataFormat'');
-    larlight::storage_manager mgr;
-    mgr.set_io_mode(mgr.READ);                // Option: READ, WRITE, BOTH
+    larlite::storage_manager mgr;
+    mgr.set_io_mode(mgr.kREAD);               // Option: kREAD, kWRITE, kBOTH
     mgr.add_in_filename(``hit_sample.root''); // Specify input file name
     mgr.set_in_rootdir(``'');                 // Specify TDirectory name if there exists
     if(!mgr.open()) {
@@ -84,7 +95,7 @@ This is an example to run an event loop.
     }
     std::cout << Form(``Retrieved \%d events!'',mgr.get_entries()) << std::endl;
     while(mgr.next_event()) {
-      const event_hit* my_hit_v = (const event_hit*)(mgr.get_data(larlight::DATA::FFTHit));
+      const larlite::event_hit* my_hit_v = mgr.get_data<larlite::event_hit>(``gaushit'');
       if(my_hit_v) {
         std::cout << Form(``Found event \%d!'',my_hit_v.event_id()) << std::endl;
       }
@@ -94,14 +105,15 @@ This is an example to run an event loop.
     return 0;
 }
 \end{lstlisting}
+Note you are still loading event interactively, so this method is not very fast unless you compile the code.
 
 \subsubsection{Simple Example: Event loop (Read \& Write)}
 This is an example to run an event loop.
 \begin{lstlisting}
 {
     gSystem->Load(``libDataFormat'');
-    larlight::storage_manager mgr;
-    mgr.set_io_mode(mgr.READ);                // Option: READ, WRITE, BOTH
+    larlite::storage_manager mgr;
+    mgr.set_io_mode(mgr.kREAD);                // Option: READ, WRITE, BOTH
     mgr.add_in_filename(``hit_sample.root''); // Specify input file name
     mgr.set_in_rootdir(``'');                 // Specify TDirectory name if there exists
     mgr.set_out_filename(``out_sample.root'');// Specify output file name
@@ -111,7 +123,7 @@ This is an example to run an event loop.
     }
     std::cout << Form(``Retrieved \%d events!'',mgr.get_entries()) << std::endl;
     while(mgr.next_event()) {
-      const event_hit* my_hit_v = (const event_hit*)(mgr.get_data(larlight::DATA::FFTHit));
+      const larlite::event_hit* my_hit_v = mgr.get_data<larlite::event_hit>(``gaushit'');
       if(my_hit_v) {
         std::cout << Form(``Copying event \%d!'',my_hit_v.event_id()) << std::endl;
       }
@@ -124,19 +136,7 @@ This is an example to run an event loop.
 Note that this script makes an exact copy of input file to the output.
 If you want to modify it, you can use non-const {\ttfamily event\_hit} pointer in the script above.
 
-\subsubsection{Advanced Example: Optimizing I/O by limiting TTree to read}
-Sometimes your LArLight file may contain much more information than you needed.
-The file size can be huge if you have stored {\ttfamily RawDigit, Wire, MCTrajectory} and such.
-By default, {\ttfamily storage\_manager} reads in all LArLight type {\ttfamily TTree}, and
-this can slow down your event loop.
 
-If you don't need it, let's cancel reading in. There is a switch you can enable TTree-wise
-read:
-\begin{lstlisting}
-    storage_manager::set_data_to_read(larlight::DATA::DATA_TYPE type, bool enable);
-\end{lstlisting}
-The first argument specifies the {\ttfamily TTree} type, and second argument specifies enable (or disable) reading.
-Call this function before calling {\ttfamily storage\_manager::open()} function.
 
 
 

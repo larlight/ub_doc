@@ -1,10 +1,13 @@
-LArLight is maintained at the github.com public \git repository:
+LArLite is maintained at the github.com public \git repository:
 \begin{lstlisting}
-https://github.com/larlight/LArLight
+https://github.com/larlight/larlite
 \end{lstlisting}
-
 Accordingly you need to have \git installed on your machine.
-Once you have \git installed, you can use standard set of commands to checkout and commit your code.
+Once you have \git installed, you can use standard set of commands to checkout and commit your code.\\
+
+\noindent {\bf Watch out of the URL: it is {\color{blue}{larlight/larlite}}, not {\color{red}{larlite/larlite}}!}
+
+
 
 \subsection{Getting Write-Access to Commit Code}
 
@@ -19,44 +22,58 @@ Here's a step to follow.
 (on your terminal)
 > ssh-keygen -t rsa
 ... (it asks you to set a password ... I set to empty but maybe a bad habit) ...
-> ls $HOME/.ssh/id\_rsa.pub
+> ls $HOME/.ssh/id_rsa.pub
 \end{lstlisting}
 The content of id\_rsa.pub file is your ssh key. Go to your account setting page on github.com. There, you find an option to add SSH-Key. Add the id\_rsa.pub file content there. Now you can checkout/commit through ssh.
 \end{enumerate}
+
+\subsection{Getting Commit Emails}
+
+{\ttfamily github.com} now supports commit email messages! Awesome! I don't need my dirty cron job anymore!
+
+\href{https://help.github.com/articles/configuring-notification-delivery-methods/}{https://help.github.com/articles/configuring-notification-delivery-methods/}
 
 \subsection{Checking Out}
 
 With github account and ssh-key set up, you can checkout the repository as follows.
 \begin{lstlisting}
-> git clone git@github.com:/larlight/LArLight MyLarLight
+> git clone git@github.com:/larlight/larlite MyLArLite
 \end{lstlisting}
-where ``MyLArLight'' is the name of local repository created under your currently working directory.
+where ``MyLArLite'' is the name of local repository created under your currently working directory.
 
 Without ssh-key, you can still checkout:
 \begin{lstlisting}
-> git clone http://github.com/larlight/LArLight MyLArLight
+> git clone http://github.com/larlight/larlite MyLArLite
 \end{lstlisting}
+but you cannot commit your code as mentioned already.
 
-\subsubsection{Checking Out ``development''}
+You might jump ahead and say ``hey my git clone failed! I see nothing under directory MyLArLite!''.
+No worries. Try:
+\begin{lstlisting}
+> ls -la MyLArLite
+\end{lstlisting}
+and you should see ``.git'' which makes any directory a git repository (i.e. you checked out alright).
+
+\subsubsection{Checking Out Branch}
 Now, the working branch is very unforunately not called ``develop'' but ``trunk''.
 Check out this branch.
 \begin{lstlisting}
-> cd MyLArLight
+> cd MyLArLite
 > git checkout trunk
 \end{lstlisting}
 
 \subsubsection{Fixed Releases}
 You can also checkout a fixed release. 
 \begin{lstlisting}
-> cd MyLArLight
+> cd MyLArLite
 > git checkout tags/$TAG
 \end{lstlisting}
 where {\ttfamily \$TAG} should be one of available tag names.
 Refer to Ch.\ref{chap:releases} for updates on each tags.\\
 
 
-Whether you use ``trunk'' or a fixed tag, you should find {\ttfamily MyLArLight/}\Core directory created. 
-This is the core LArLight package you will build regarding LArSoft data analysis.
+Whether you use ``trunk'' or a fixed tag, you should find {\ttfamily MyLArLite/}\Core directory created. 
+This is the core LArLite package you will build regarding LArSoft data analysis.
 
 \subsection{What's in there?}
 Under the top directory, you should find the following list of contents.
@@ -64,7 +81,7 @@ Under the top directory, you should find the following list of contents.
 
     \item \Core
       \begin{itemize}
-          \item This directory contains the core part of LArLight framework including \Base, \DataFormat, \Analysis, and \LArUtil. Built by default (see Sec.\ref{sec:build}). 
+          \item This directory contains the core part of LArLite framework including \Base, \DataFormat, \Analysis, and \LArUtil. Built by default (see Sec.\ref{sec:build}). 
       \end{itemize}
 
     \item \UserDev
@@ -94,7 +111,7 @@ Under the top directory, you should find the following list of contents.
 
     \item {\ttfamily README.txt}
       \begin{itemize}
-          \item A brief README for LArLight (you don't need it as you are reading this manual).
+          \item A brief README for LArLite (you don't need it as you are reading this manual).
       \end{itemize}
 
     \item \ttfamily{ASK\_QUESTIONS.txt}

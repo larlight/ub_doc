@@ -6,31 +6,32 @@ A list of header files is shown below:
 \begin{itemize}
 \item[] {\ttfamily FrameworkConstants.hh} ... constants used to configure this framework
 \item[] {\ttfamily DataFormatConstants.hh} ... constants related to data products in this framework
-\item[] {\ttfamily MCConstants.hh} ... MC constants copied from LArSoft
-\item[] {\ttfamily GeoConstants.hh} ... geo constants copied from LArSoft
-\item[] {\ttfamily FEMConstants.hh} ... FEM electronics related constants
-\item[] {\ttfamily DecoderConstants.hh} ... Used in separate package (NevisDecoder), you can ignore
+\item[] {\ttfamily MCConstants.hh} ... {\ttfamily sim}, {\ttfamily simb} namespace constants copied from LArSoft
+\item[] {\ttfamily RawConstants.hh} ... {\ttfamily raw} namespace constants copied from LArSoft
+\item[] {\ttfamily GeoConstants.hh} ... {\ttfamily geo} namespace constants copied from LArSoft
+%\item[] {\ttfamily FEMConstants.hh} ... FEM electronics related constants
+%\item[] {\ttfamily DecoderConstants.hh} ... Used in separate package (NevisDecoder), you can ignore
 \end{itemize}
 Following subsections describe what's defined in each of them.
 
 \subsection{FrameworkConstants.hh}
 This framework comes with some message service class ({\ttfamily Message}).
 This message service is not sophisticated at all but described in the later section.
-It works based on message ``levels'', which is specified by {\ttfamily enum MSG::Level}.
+It works based on message ``levels'', which is specified by {\ttfamily enum msg::Level}.
 This message level and color-coding scheme of each message can be found in this header file.
 
 \subsection{DataFormatConstants.hh}
 There are three kinds of important parameters defined in this file.
 
-\subsubsection{Numeric Limit: {\ttfamily const XXX INVALID\_XXX}}
+\subsubsection{Numeric Limit: {\ttfamily const XXX kINVALID\_XXX}}
 There are list of numeric limits that can be used to label some ``undetermined'' variable.
 I follow a strategy used in LArSoft's MC default variables and use maximum possible value
 for each variable type. That being said, sometimes LArSoft uses ``999'' or this sort to
-mark ``undetermined''. So watch out: that is likely not corrected in your LArLight file
+mark ``undetermined''. So watch out: that is likely not corrected in your LArLite file
 if you copied data contents from LArSoft.
 
-\subsubsection{Data Type: {\ttfamily \enum DATA::DATA\_TYPE}}
-Probably most important \enum. This defines a set of data types in LArLight.
+\subsubsection{Data Type: {\ttfamily \enum data::kDataType\_t}}
+Probably most important \enum. This defines a set of data types in LArLite.
 You should find, for each type, a corresponding LArSoft data type.
 This is used to retrieve data using I/O interface class (described later).
 
@@ -39,37 +40,35 @@ You can add a new element anywhere, but the gentlemen's rule is to add it
 in the order of basic information => higher level information.
 For instance, this order: {\ttfamily Wire, Hit, Cluster, Shower}.
 
-\subsubsection{Data Name: {\ttfamily std::string DATA\_TREE\_NAME[]}}
+\subsubsection{Data Name: {\ttfamily std::string kDATA\_TREE\_NAME[]}}
 This is an array of {\ttfamily std::string} to define a corresponding name for
-each {\ttfamily DATA::DATA\_TYPE}. The length of the array is, therefore,
-{\ttfamily DATA::DATA\_TYPE\_MAX}. This is used to name {\ttfamily TTree}
-stored in LArLight \ROOT file and such, described in later sections.
+each {\ttfamily data::DataType\_t}. The length of the array is, therefore,
+{\ttfamily data::kDATA\_TYPE\_MAX}. This is used to name {\ttfamily TTree}
+stored in LArLite \ROOT file and such, described in later sections.
 
 \subsection{MCConstants.hh}
 This defines MC constants used in LArSoft data products.
-To store same information, LArLight needs these constants, too.
+To store same information, LArLite needs these constants, too.
 Both constants name and values are exact copy from LArSoft to avoid a confusion.
 Copied constants include:
 \begin{itemize}
-\item[] {\ttfamily Origin\_t} ... specifies particle generator type
-\item[] {\ttfamily curr\_type} ... specifies neutrino interaction current type
-\item[] {\ttfamily int\_type\_} ... specifies neutrino interaction categories
+\item[] {\ttfamily simb::Origin\_t} ... specifies particle generator type
+\item[] {\ttfamily simb::curr\_type} ... specifies neutrino interaction current type
+\item[] {\ttfamily simb::int\_type\_} ... specifies neutrino interaction categories
 \end{itemize}
-Unfortunately you cannot blame the author for inconsistent naming scheme. 
-If you insist, please change in LArSoft! Then we may propagate a change to here.
 
 \subsection{GeoConstants.hh}
 This defines two \enum that belong to {\ttfamily geo} in LArSoft that is stored in the data product.
 The first is {\ttfamily geo::View\_t} that specifies wire plane IDs.
 The second is {\ttfamily geo::SigType\_t} that specifies signal type, induction or collection.
 
-\subsection{FEMConstants.hh}
-Some FEM specific constants and \enum are defined in this file.
-This is originally written for {\ttfamily NevisDecoder} package and now merged with LArLight.
-It has a correspondency to LArSoft's constants in {\ttfamily optdata} namespace, defined under OpticalTypes.h.
+%\subsection{FEMConstants.hh}
+%Some FEM specific constants and \enum are defined in this file.
+%This is originally written for {\ttfamily NevisDecoder} package and now merged with LArLite.
+%It has a correspondency to LArSoft's constants in {\ttfamily optdata} namespace, defined under OpticalTypes.h.
 
-All users care, I believe, is {\ttfamily FEM::DISCRIMINATOR} which defines which discriminator type
-is fired in PMT-FEM. If you are dealing with TPC-FEM, you can ignore this \enum.
+%All users care, I believe, is {\ttfamily FEM::DISCRIMINATOR} which defines which discriminator type
+%is fired in PMT-FEM. If you are dealing with TPC-FEM, you can ignore this \enum.
 
 
 

@@ -1,59 +1,62 @@
 The data product classes are meant to store LArSoft output data, hence their design follows closely with what is in LArSoft.
-If you look at a header file of data product class, you should find LArLight data product classes carry same or very similar attributes name to reduce confusion.
+If you look at a header file of data product class, you should find LArLite data product classes carry same or very similar attributes name to reduce confusion.
 For adding further data product classes to store LArSoft data, it is recommended to keep this trend to reduce confusion.
-Here is a list of LArLight data products (left) with corresponding LArSoft data product (right) as of now.
+Here is a list of LArLite data products (left) with corresponding LArSoft data product (right) as of now.
 \begin{lstlisting}
-    larlight::mctruth <==> simb::MCTruth
-    larlight::mcnu <==> simb::MCNeutrino
-    larlight::mctrack <==> simb::MCTrajectory
-    larlight::mcpart <==> simb::MCParticle
-    larlight::tpcfifo <==> raw::RawDigit
-    larlight::pmtfifo <==> optdata::FIFOChannel
-    larlight::wire <==> recob::Wire
-    larlight::hit  <==> recob::Hit
-    larlight::cluster <==> recob::Cluster
-    larlight::spacepoint <==> recob::SpacePoint
-    larlight::track <==> recob::Track
-    larlight::shower <==> recob::Shower
-    larlight::endpoint2d <==> recob::EndPoint2D
-    larlight::vertex <==> recob::Vertex
-    larlight::calorimetry <==> anab::Calorimetry
-    larlight::trigger <==> (not yet existing in LArSoft)
-    larlight::user_info ... LArLight-only custom data product
+    larlite::gtruth <==> simb::GTruth
+    larlite::mcflux <==> simb::MCFlux
+    larlite::mctruth <==> simb::MCTruth
+    larlite::mcnu <==> simb::MCNeutrino
+    larlite::mctrajectory <==> simb::MCTrajectory
+    larlite::mcpart <==> simb::MCParticle
+    larlite::mcshower <==> sim::MCTruth
+    larlite::simch <==> sim::SimChannel
+    larlite::rawdigit <==> raw::RawDigit
+    larlite::wire <==> recob::Wire
+    larlite::hit  <==> recob::Hit
+    larlite::seed  <==> recob::Seed
+    larlite::cluster <==> recob::Cluster
+    larlite::spacepoint <==> recob::SpacePoint
+    larlite::track <==> recob::Track
+    larlite::shower <==> recob::Shower
+    larlite::endpoint2d <==> recob::EndPoint2D
+    larlite::vertex <==> recob::Vertex
+    larlite::calorimetry <==> anab::Calorimetry
+    larlite::partid <==> anab::ParticleID
+    larlite::pfpart <==> recob::PFParticle
+    larlite::user_info ... LArLite-only custom data product
 \end{lstlisting}
 There is additional data product called {\ttfamily user\_info} which will be described later.
 
-All data product class shares the base class {\ttfamily larlight::data\_base} which stores two variables:
-\begin{itemize}
-\item {\ttfamily larlight::DATA::DATA\_TYPE}
-  \begin{itemize}
-    \item[] This \enum specifies the type of data stored. For instance, {\ttfamily larlight::hit} can be assigned with {\ttfamily larlight::DATA::FFTHit}, {\ttfamily larlight::DATA::APAHit}, and so on. By accessing this enum value, a user knows what kind of ``hit'' is stored.
-  \end{itemize}
-\item {\ttfamily std::map<larlight::DATA::DATA\_TYPE,std::vector<std::vector<unsigned short> > >}
-  \begin{itemize}
-    \item[] This is used to specify the association. This is described later in detail.
-  \end{itemize}
-\end{itemize}
+All data product class shares the base class {\ttfamily larlite::data\_base} which stores only one variable: {\ttfamily larlite::data::DataType\_t}. This \enum value specifies the type of data stored. For instance, {\ttfamily larlite::hit} data product stores a type {\ttfamily larlite::data::kHit}.
 
 \subsection{What is stored per event?}
 Despite a few exceptions (which I describe next), each data product class {\ttfamily T} has a corresponding collection class which inherits from {\ttfamily std::vector<T>}, named as {\ttfamily event\_T}. 
-For instance, in {\ttfamily cluster.hh}, you find there is a class {\ttfamily larlight::cluster} and {\ttfamily larlight::event\_cluster} where the latter is a type {\ttfamily std::vector<larlight::cluster>}. What is stored per event is {\ttfamily std::vector<T>}, just like a collection of object is stored in LArSoft. This collection data product also inherits from {\ttfamily data\_base}, but it carries additional inforamtion:
+For instance, in {\ttfamily cluster.hh}, you find there is a class {\ttfamily larlite::cluster} and {\ttfamily larlite::event\_cluster} where the latter is a type {\ttfamily std::vector<larlite::cluster>}. What is stored per event is {\ttfamily std::vector<T>}, just like a collection of object is stored in LArSoft. This collection data product also inherits from {\ttfamily event\_base} which carries additional inforamtion:
 \begin{itemize}
-\item Event number
-\item Run number
-\item Sub-Run number
+\item {\ttfamily unsigned int} Event number
+\item {\ttfamily unsigned int} Run number
+\item {\ttfamily unsigned int} Sub-Run number
+\item {\ttfamily std::string} Producer's name
+\item {\ttfamily std::map<larlite::product\_id,AssSet\_t>} Association information
 \end{itemize}
+Just like everything else, {\ttfamily event\_base} inherits from {\ttfamily data\_base} and hence knows its own data product type. Together with the producer's name string, this forms a unique data product identification in LArLite. For instance, type {\ttfamily larlite::data::kHit} made by ``gaushit'' is a specific data product ID. {\ttfamily larlite::product\_id} is a class defined under {\ttfamily core/DataFormat/larlite\_dataformat\_utils.h}, and is simply {\ttfamily std::pair<larlite::data::DataType\_t,std::string>} to hold such data product identity. 
 
-Exceptions to this event-wise collection storage scheme include {\ttfamily larlight::mcnu} and {\ttfamily larlight::mctrack}.
-In LArSoft, {\ttfamily simb::MCNeutrino} is stored as a part of {\ttfamily simb::MCTruth}. Likewise, {\ttfamily simb::MCTrajectory} is stored as a part of {\ttfamily simb::MCParticle}. LArLight respects this scheme and stores {\ttfamily larlight::mcnu} in {\ttfamily larlight::mctruth} and {\ttfamily larlight::mctrack} in {\ttfamily larlight::mcpart}.
+As you noticed, the last bullet point above is the associlation information holder.
+It is a {\ttfamily std::map} with a key that identifies an associated data product ID, and the value holds the corresponding association information.
+See Sec.\ref{chap:dataformat:association} for details of association information.
+
+\subsubsection{Data Products Exception to {\ttfamily event\_T}}
+Exceptions to this event-wise collection storage scheme include {\ttfamily larlite::mcnu} and {\ttfamily larlite::mctrajectory}.
+In LArSoft, {\ttfamily simb::MCNeutrino} is stored as a part of {\ttfamily simb::MCTruth}. Likewise, {\ttfamily simb::MCTrajectory} is stored as a part of {\ttfamily simb::MCParticle}. LArLite respects this scheme and stores {\ttfamily larlite::mcnu} in {\ttfamily larlite::mctruth} and {\ttfamily larlite::mctrajectory} in {\ttfamily larlite::mcpart}.
 
 \subsubsection{A few remarks on MC data products}
-In case you are unfamiliar with these MC information, though this is a side-track, {\ttfamily larlight::mcnu} stores neutrino specific information from neutrino generator. It is a part of {\ttfamily larlight::mctruth} because a generator (whether it is neutrino generator or not) stores {\ttfamily larlight::mctruth} in general. Similarly, {\ttfamily larlight::mctrack} is part of {\ttfamily larlight::mcpart} because a particle's trajectory points (that is what {\ttfamily larlight::mctrack} is) belong to a particle information which is {\ttfamily larlight::mcpart}.
+In case you are unfamiliar with these MC information, though this is a side-track, {\ttfamily larlite::mcnu} stores neutrino specific information from neutrino generator. It is a part of {\ttfamily larlite::mctruth} because a generator (whether it is neutrino generator or not) stores {\ttfamily larlite::mctruth} in general. Similarly, {\ttfamily larlite::mctrajectory} is part of {\ttfamily larlite::mcpart} because a particle's trajectory points (that is what {\ttfamily larlite::mctrajectory} is) belong to a particle information which is {\ttfamily larlite::mcpart}.
 
 \subsubsection{More useful info to store?}
 If you have some information you think is very useful, let's store it :)
-For instance, it was advised that knowing a part of {\ttfamily larlight::mctrack} that is inside the fiducial volume is very useful information.
-So we added this information in {\ttfamily larlight::mctrack} for users so that a user can access particle trajectory points inside the fiducial volume quickly instead of looping over all trajectory points and inspect whether it is in the fiducial volume or not.
+For instance, it was advised that knowing a part of {\ttfamily larlite::mctrajectory} that is inside the fiducial volume is very useful information.
+So we added this information in {\ttfamily larlite::mctrajectory} for users so that a user can access particle trajectory points inside the fiducial volume quickly instead of looping over all trajectory points and inspect whether it is in the fiducial volume or not.
 
 Your ideas can help others. So please share it!
 
@@ -65,7 +68,7 @@ So feel free to consult with the author.\\
 Alternative solution is to ask the author to add it. 
 Believe me, it's so simple and it won't take me > 10 minutes to add another on the list above.
 
-\subsection{Custon data product for dynamic variable declaration ... {\ttfamily user\_info}}
+\subsection{Custom data product for dynamic variable declaration ... {\ttfamily user\_info}}
 
 Sometimes you want a custom data product and store information in the output data root file.
 For instance:
@@ -95,31 +98,52 @@ Using {\ttfamily std::map} is not great for speed when retrieving the variable.
 But this seems to be a matter of micro-seconds or less, depending on number of keys used.
 
 \subsection{Association}
-
-The author has no idea how association is stored in \ART. But that does not matter.
+\label{chap:dataformat:association}
+The author has little idea about how exactly association is stored in \ART. But that does not matter.
 
 As you have seen in the previous section, all data product are stored in terms of {\ttfamily std::vector} collection.
 So ultimately what you need to associate one object to (an)other are:
 \begin{itemize}
+\item Associated data product ID
 \item A set of indexes that point to the right {\ttfamily std::vector} index.
-\item Associated data type to know which collection {\ttfamily std::vector} to access.
 \end{itemize}
-To do this, {\ttfamily data\_base}, the base of all data product, has:
+As mentioned earlier, {\ttfamily event\_base} class holds association information
 \begin{lstlisting}
-    std::map<larlight::DATA::DATA_TYPE,std::vector<std::vector<unsigned short> > > 
+    std::map<larlite::product_id,larlite::AssSet_t>
 \end{lstlisting}
-My god, such a long specialization name... 
+where 
+\begin{lstlisting}
+larlite::AssSet_t
+larlite::product_id
+\end{lstlisting}
+are simply
+\begin{lstlisting}
+std::vector<std::vector<unsigned int>>
+std::pair<larlite::data::DataType_t,std::string>
+\end{lstlisting}
+in respective order. As you might guess, the key is the product ID of associated data container, and the value is the association information. 
 
-Then we wonder why we store a ``vector of vector'' instead just a ``vector''?
-This is because \ART is capable to store more than one set of association (I think).
-Even if \ART won't do that, having LArLight being capable to store multiple association of the same data type could be handy.
-So that's why we have such thing in {\ttfamily data\_base}.\\
+The association information needs to link a) a location of subject data product and b) locations of associated data products.
+In case it is confusing, a) is the index of {\ttfamily event\_T} which holds this association information.
+b) is a set of indices that concerns associated data products, say {\ttfamily event\_U}.
+
+For this reason, the association information is a two-layered vector: the outer (primary) vector index points to one (origin) data product, and the inner vector indecies point to associated data product indices. 
 
 Retrieving association is as simple as calling the following function:
 \begin{lstlisting}
-    data_base::association(larlight::DATA::DATA_TYPE, size_t i=0)
+    event_base::association(larlite::product_id)
 \end{lstlisting}
-You provide the association type in the 1st argument.
-The 2nd argument is to specify which association of the provided type to access.
-Because we have only one set of association in many cases (for example, one cluster has only one set of hits associated), almost always the 2nd argument is 0 (i.e. 0th element of vector of associations).
-For this reason, the default value of the 2nd argument is 0, and most users do not need to provide 2nd argument.
+You provide the product ID of association as an argument.
+
+For instance, here's a code snipset to loop over associated hits for clusters to calculate charge sum per cluster and fill a histogram.
+\begin{lstlisting}
+    auto ass_info = ev_cluster.association(ev_hit.product_id());
+    double cluster_q=0;
+    for(auto const& hit_indices : ass_info) {
+      cluster_q = 0;
+      for(auto const& hit_index : hit_indices)
+        cluster_q += ev_hit[hit_index].Charge();
+      h->Fill(cluster_q);
+    }
+\end{lstlisting}
+where {\ttfamily ev\_cluster} and {\ttfamily ev\_hit} are both variable names of {\ttfamily event\_cluster} and {\ttfamily event\_hit} data product class instances. 

@@ -1,43 +1,43 @@
-Like advertised many times, LArLight was originally a \CPP project play ground for summer students. The author thinks it's very important to have an empty \CPP package generator that comes with build system, so that a user can focus on writing the algorithm instead of figuring out how to compile and such.
+Here, I assume we are working under {\ttfamily UserDev/MyRepo}. In fact, since it's tedious, I will just refer to {\ttfamily MyRepo}.
+
+Like advertised many times, LArLite was originally a \CPP project play ground for summer students. The author thinks it's very important to have an empty \CPP package generator that comes with build system, so that a user can focus on writing the algorithm instead of figuring out how to compile and such.
 
 So here it is: there is a \python script to generate an empty \CPP package:
 \begin{lstlisting}
-    UserDev/bin/gen_empty_package
+    MyRepo/bin/gen_empty_package
 \end{lstlisting}
 Running it:
 \begin{lstlisting}
-    > cd $MAKE_TOP_DIR/UserDev
+    > cd $LARLITE_USERDEVDIR/MyRepo
     > python bin/gen_empty_package MyProject
 \end{lstlisting}
-will create a directory {\ttfamily UserDev/MyProject} which include minimal set of source codes to compile an empty \CPP class. You can have your name choice in place of ``MyProject''. After running the command, try:
+will create a directory {\ttfamily MyRepo/MyProject} which include minimal set of source codes to compile an empty \CPP class. You can have your name choice in place of ``MyProject''. After running the command, try:
 \begin{lstlisting}
     > cd MyProject
     > make -j4
 \end{lstlisting}
-This compiles your code and makes {\ttfamily libMyProject.so} under {\ttfamily lib} directory.
-What you compiled is a \CPP class called ``MyProject'' defined in {\ttfamily MyProject.hh}. 
+This compiles your code and makes {\ttfamily libMyRepo\_MyProject.so} under {\ttfamily lib} directory.
+What you compiled is a \CPP class called ``sample'' defined in {\ttfamily sample.h}. 
 
 \subsection{Using in Interpreter}
 
 So how can you ``use'' this \CPP class? You can write a binary executable code, or try out in \CINT or \PyROOT. Here is an example:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libMyProject'');
-    root[1] MyProject k;
-    root[2]
+    root[0] sample k;
 \end{lstlisting}
 Above lines work (i.e. your class instance is created) because \CINT is informed about your class. 
 
 \subsection{``Hello World'' Development}
 \label{sec:helloworld}
-Let's try a simple modification to your class. Here's an example ``hello world'' program using \CPP class. Open {\ttfamily MyProject.hh} and add a {\ttfamily void} function as shown below:
+Let's try a simple modification to your class. Here's an example ``hello world'' program using \CPP class. Open {\ttfamily sample.h} and add a {\ttfamily void} function as shown below:
 \begin{lstlisting}
-class MyProject{
+class sample{
 public:
   /// Default constructor
-  MyProject(){};
+  sample(){};
   /// Default destructor
-  virtual ~MyProject(){};
+  virtual ~sample(){};
   /// Hello world!
   void HelloWorld() { std::cout << ``Hello World!'' << std::endl; }
 };
@@ -45,11 +45,10 @@ public:
 Save, close and compile (i.e. type ``make''). Now, try the following in \CINT or \PyROOT:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libMyProject'');
-    root[1] MyProject k;
-    root[2] k.HelloWorld();
+    root[0] sample k;
+    root[1] k.HelloWorld();
     Hello World!
-    root[3]
+    root[2]
 \end{lstlisting}
 
 Whenever you want to start a new project with an empty class, you can come back to this example and create your new \CPP project!

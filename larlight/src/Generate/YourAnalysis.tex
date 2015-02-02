@@ -1,26 +1,23 @@
 
-Here, by \Analysis package, we mean a directory with a collection of analysis unit source code. So it is meant to use LArLight analysis framework. 
+Here, by \Analysis package, we mean a directory with a collection of analysis unit source code. So it is meant to use LArLite analysis framework. 
 
 Note that, if you do not want to be in the \Analysis framework, you can choose to generate an empty \CPP package instead of \Analysis package. See Sec.\ref{sec:simplecpp} to learn how to do this.
 
 \subsection{Generating Your Analysis Package}
-When you develop your code, you probably don't want to write your code under \Base, \DataFormat, \LArUtil, or \Analysis (i.e. sub directories under \Core directory) because those directories are basis of the framework and everyone shares them. So how can you work without disturbing others and, most importantly, without being disturbed? A simple solution is to generate your own analysis package and work in there. 
-
 There is a \python script that allows you to generate a new package:
 \begin{lstlisting}
-    > cd $MAKE_TOP_DIR/UserDev
+    > cd $LARLITE_USERDEVDIR/MyRepo
     > python bin/gen_ana_package MyAna
 \end{lstlisting}
-Executing above commands create a new directory called MyAna under \UserDev. There, you find {\ttfamily MyAna.cc} and {\ttfamily MyAna.hh} together with {\ttfamily GNUmakefile} which is necessary for building the package. Try:
+Executing above commands create a new directory called MyAna under \UserDev. There, you find {\ttfamily sample\_ana.cxx} and {\ttfamily sample\_ana.h} together with {\ttfamily GNUmakefile} which is necessary for building the package. Try:
 \begin{lstlisting}
     > cd MyAna
     > make -j4
 \end{lstlisting}
-This should compile your package and create {\ttfamily lib/MyAna.so} which includes \CINT dictionary. You just made your new analysis unit class, {\ttfamily MyAna}, whieh inherits from {\ttfamily ana\_base}! Your new analysis unit is accessible from \CINT or \PyROOT like any other classes in LArLight:
+This should compile your package and create {\ttfamily lib/libMyRepo\_MyAna.so} which includes \CINT dictionary. You just made your new analysis unit class, {\ttfamily sample\_ana}, whieh inherits from {\ttfamily ana\_base}! Your new analysis unit is accessible from \CINT or \PyROOT like any other classes in LArLite:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libMyAna'');
-    root[1] larlight::MyAna my_ana_unit;
+    root[0] larlite::sample_ana my_ana_unit;
 \end{lstlisting}
 Now go ahead and code up this analysis unit, and run with {\ttfamily ana\_processor}!
 
@@ -60,7 +57,7 @@ Like {\ttfamily example.cc} introduced in the previous subsection, there is an e
 written in \python using \PyROOT interface to import \CPP libraries. Under your package, you 
 should find {\ttfamily mac} directory which contains {\ttfamily example.py}.
 
-This is an equivalent of {\ttfamily bin/example.cc} but written in \python. You need a LArLight
+This is an equivalent of {\ttfamily bin/example.cc} but written in \python. You need a LArLite
 sample \ROOT file to run this program just like {\ttfamily example}. If you have a sample file
 called {\ttfamily trial.root}, you can run the program as follows.
 \begin{lstlisting}
@@ -78,11 +75,11 @@ There is a handy script to generate your new analysis unit under your {\ttfamily
 Say I want to generate a new analysis unit called ``MyAnotherUnit'' under my package, ``MyAna''. 
 I can do:
 \begin{lstlisting}
-    > cd $MAKE_TOP_DIR/UserDev/MyAna
+    > cd $LARLITE_USERDEVDIR/MyRepo/MyAna
     > python bin/gen_newana MyAnotherUnit
 \end{lstlisting}
-Now I can find {\ttfamily MyAnotherUnit.hh} and {\ttfamily MyAnotherUnit.cc} created under {\ttfamily MyAna}
-package. Also, if I look carefully, I see {\ttfamily LinkDef.h} and {\ttfamily MyAna-TypeDef.hh} are modified
+Now I can find {\ttfamily MyAnotherUnit.h} and {\ttfamily MyAnotherUnit.cxx} created under {\ttfamily MyAna}
+package. Also, if I look carefully, I see {\ttfamily LinkDef.h} and {\ttfamily MyAna-TypeDef.h} are modified
 to include a new analysis unit. So I can just re-compile my package:
 \begin{lstlisting}
     > make -j2
@@ -96,11 +93,11 @@ reasons: to develop some algorithm that is independent of the framework (= easy 
 
 Here is a script for you:
 \begin{lstlisting}
-    > cd $MAKE_TOP_DIR/UserDev/MyAna
+    > cd $LARLITE_USERDEVDIR/MyRepo/MyAna
     > python bin/gen_empty_class MyEmptyClass
 \end{lstlisting}
-Now you should see {\ttfamily MyEmptyClass.hh} and {\ttfamily MyEmptyClass.cc} created under {\ttfamily MyAna}
-package. There also made appropriate modification to {\ttfamily LinkDef.h} and {\ttfamily MyAna-TypeDef.hh}
+Now you should see {\ttfamily MyEmptyClass.h} and {\ttfamily MyEmptyClass.cxx} created under {\ttfamily MyAna}
+package. There also made appropriate modification to {\ttfamily LinkDef.h} and {\ttfamily MyAna-TypeDef.h}
 so that you can just type:
 \begin{lstlisting}
     > make -j2

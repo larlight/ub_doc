@@ -18,9 +18,9 @@ Probably seeing an example code is much easier. Using, again, {\ttfamily KazuAna
 {
     gSystem->Load(``libAnalysis'');
     // Create ana_processor instance
-    larlight::ana_processor my_proc;
+    larlite::ana_processor my_proc;
     // Set I/O mode, like storage_manager.
-    my_proc.set_io_mode(larlight::storage_manager::READ);
+    my_proc.set_io_mode(larlite::storage_manager::READ);
     // Set analysis output file: not data output file.
     my_proc.set_ana_output_file(``ana.out'');
     // Set TDirectory name under which TTree resides
@@ -29,7 +29,7 @@ Probably seeing an example code is much easier. Using, again, {\ttfamily KazuAna
     my_proc.add_input_file(``hit_sample.root'');
     
     // Create analysis unit on heap
-    larlight::KazuAna* k = new larlight::KazuAna;
+    larlite::KazuAna* k = new larlite::KazuAna;
     
     // Attach
     my_proc.add_process(k);
@@ -44,5 +44,14 @@ After the I/O configuration, like described before, you attach analysis unit(s).
 
 Finally, {\ttfamily ana\_processor::run()} starts a batch (uninterrupted) event processing. Another option is to use {\ttfamily ana\_processor::process\_event()} which process one event per function call. This can be useful when you want to do an interactive event processing.
 
-
-
+\subsection{Filter Mode}
+\label{sec:analysis:filtermode}
+{\ttfamily ana\_processor} has a feature called ``filtering mode''. This can be enabled by a function:
+\begin{lstlisting}
+    ana_processor::enable_filter(bool doit=true)
+\end{lstlisting}
+When enabled, attached analysis unit's {\ttfamily analyze()} function return value causes to abort the execution of the rest of analysis units in an event.
+Let's say we attached multiple analysis units and enabled a filter mode.
+Analysis units are executed in the order we attach them to an {\ttfamily ana\_processor} instance.
+If filter mode is enabled and if any one of analysis unit returns false, {\ttfamily ana\_processor} aborts the execution of the rest of analysis unit and move onto the next event.
+It does not mean to filter out the subject event from an output file (which is a feature that can be easily implemented if desired... let the author know).
