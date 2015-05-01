@@ -1,0 +1,255 @@
+
+\documentclass{article}
+\usepackage{fontenc}
+\usepackage[english]{babel}
+\usepackage[latin1]{inputenc}
+\usepackage{babel}
+\usepackage{indentfirst} %auto-indent first paragraphs in sections
+\usepackage{verbatim}
+\usepackage{url}
+\usepackage{fancyhdr} % Required for custom headers
+\usepackage{lastpage} % Required to determine the last page for the footer
+\usepackage{extramarks} % Required for headers and footers
+\usepackage{graphicx} % Required to insert images
+\usepackage{subfigure} %for horizontally placed pictures
+\usepackage{hyperref} %to make table of contents clickable
+\hypersetup{
+	colorlinks,
+	citecolor=black,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=black
+	}
+
+\usepackage{multirow}
+
+% Margins
+\topmargin=-0.45in
+\evensidemargin=0in
+\oddsidemargin=0in
+\textwidth=6.5in
+\textheight=9.0in
+\headsep=0.25in 
+\linespread{1.1} % Line spacing
+
+% Set up the header and footer
+\pagestyle{fancy}
+\lhead{\myAuthorName} % Top left header
+\chead{\myTitle} % Top right header
+%\rhead{\myDate}
+\rhead{\today}
+\lfoot{} % Bottom left footer
+\cfoot{} % Bottom center footer
+\rfoot{Page\ \thepage\ of\ \pageref{LastPage}} % Bottom right footer
+\renewcommand\headrulewidth{0.4pt} % Size of the header rule
+\renewcommand\footrulewidth{0.4pt} % Size of the footer rule
+
+\newcommand{\myTitle}{Cluster Merging Algorithms Documentation}
+\newcommand{\myAuthorName}{David Caratelli, David Kaleko}
+%\newcommand{\myDate}{January, 2013}
+%----------------------------------------------------------------------------------------
+
+
+\title{\myTitle}
+\author{\myAuthorName}
+\date{\today}
+
+
+
+\begin{document}
+\maketitle
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Overview}
+\footnote{As an initial note, this documentation describes cluster merging algorithms as they are coded as of the time this document was$\nu_e$CC written (May 1st, 2015). These algorithms, as described, were used in both MCC4 and MCC5 productions on MicroBooNE.} The output of Fuzzycluster is usually many small clusters. An example of raw Fuzzycluster output on a clean single $\pi^0$ event is shown in \autoref{raw_fuzzy_pi0_fig} and on a single $\nu_e$CC event is shown in \autoref{raw_fuzzy_nue_fig}. In order to be able to reconstruct a meaningful shower object, it is necessary to combine these small clusters together. It is important not to merge clusters that come from different physical particles, as there is no un-merging process downstream. \\\\
+\indent Developers have decided that cluster merging is best done in multiple steps, so merging is broken up into ``preliminary" and ``second stage merging". After first stage merging comes track removal (necessary for shower reconstruction), then second stage merging happens only on the remaining shower-like clusters. If necessary, a third stage merging can be implemented as well, but it does not exist yet.
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=110mm]{Figures/raw_fuzzy_pi0.png}
+\end{center}
+\caption{\textit{A very clean $\pi^0$ event, Fuzzycluster output from one plane. The y- axis is time, the x- axis is wire number. Each different color corresponds to a different cluster.}}
+\label{raw_fuzzy_pi0_fig}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=110mm]{Figures/raw_fuzzy_nue.png}
+\end{center}
+\caption{\textit{A very clean $\nu_e$CC event, Fuzzycluster output from one plane. The y- axis is time, the x- axis is wire number. Each different color corresponds to a different cluster.}}
+\label{raw_fuzzy_nue_fig}
+\end{figure}
+
+\subsection{Preliminary (First-Stage) Merging}
+The input of preliminary merging are clusters directly output by Fuzzycluster. A screenshot of the Fuzzycluster output of a very clean $\pi^0$ event is shown in \autoref{raw_fuzzy_pi0_fig} and on a single $\nu_e$CC event is shown in \autoref{raw_fuzzy_nue_fig}. The purpose of preliminary merging is two-fold.
+\begin{itemize}
+\item Showers often have a small, track-like cluster at their start. This needs to be merged with the rest of the shower-like clusters it leads in to, so it won't get removed in the track removal stage.
+	\begin{enumerate}
+	\item This is especially important because this cluster is generally where the important $\frac{dE}{dx}$ information comes from for showers.
+	\end{enumerate}
+\item ``Obvious" merging of clusters (that are clearly from the same shower) is done here. Note, if it is not obvious, the clusters are not merged, and that responsibility is passed on to second-stage merging. \textit{There is no un-merging.}
+\end{itemize}
+Preliminary merging is run with the ``MergeTillConverge" flag set to true. The different algorithms used in preliminary merging and their purposes are described in \textbf{\autoref{sec:PrelimMerging}}. To understand these descriptions (for example, what a ``prohibit" algorithm is, or a ``priority algorithm" is, or an ``algo array" is, or what ``MergeTillConverge" is), the reader may have to refer to documentation on the merging framework put together by Kazu (docDB reference here). A screenshot of the same $\pi^0$ event as shown in \autoref{raw_fuzzy_pi0_fig} after preliminary merging is shown in \autoref{prelim_fuzzy_pi0_fig}. A screenshot of the same $\nu_e$CC event as shown in \autoref{raw_fuzzy_nue_fig} after preliminary merging is shown in \autoref{prelim_fuzzy_nue_fig}.
+
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=110mm]{Figures/prelim_fuzzy_pi0.png}
+\end{center}
+\caption{\textit{The same $\pi^0$ event as shown in \autoref{raw_fuzzy_pi0_fig} after preliminary merging. The color of clusters in this plot are unrelated to the colors of clusters in \autoref{raw_fuzzy_pi0_fig}.}}
+\label{prelim_fuzzy_pi0_fig}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=110mm]{Figures/prelim_fuzzy_nue.png}
+\end{center}
+\caption{\textit{The same $\nu_e$CC event as shown in \autoref{raw_fuzzy_nue_fig} after preliminary merging. The color of clusters in this plot are unrelated to the colors of clusters in \autoref{raw_fuzzy_nue_fig}.}}
+\label{prelim_fuzzy_nue_fig}
+\end{figure}
+
+\subsection{Second Stage Merging}
+The input of second stage merging are clusters already merged by preliminary clusters, excluding all ``track-like" clusters that remained after preliminary merging. The definition of ``track-like" clusters is described in \textbf{\autoref{sec:CBAlgoTrackSeparate}}. The output of second stage merging are clusters that are used as input for shower reconstruction.\\\\
+Second stage merging is run with the ``MergeTillConverge" flag set to true. The different algorithms used in second stage merging and their purposes are described in \textbf{\autoref{sec:SecondMerging}}. A screenshot of the same $\pi^0$ event as shown in \autoref{raw_fuzzy_pi0_fig} and \autoref{prelim_fuzzy_pi0_fig} after second merging is shown in \autoref{second_fuzzy_pi0_fig}.  A screenshot of the same $\nu_e$CC event as shown in \autoref{raw_fuzzy_nue_fig} and \autoref{prelim_fuzzy_pi0_fig} after second merging is shown in \autoref{second_fuzzy_nue_fig}.
+
+
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=110mm]{Figures/second_fuzzy_pi0.png}
+\end{center}
+\caption{\textit{The same $\pi^0$ event as shown in \autoref{raw_fuzzy_pi0_fig} and \autoref{prelim_fuzzy_pi0_fig}, now after second stage merging. The color of clusters in this plot are unrelated to the colors of clusters in \autoref{raw_fuzzy_pi0_fig} and \autoref{prelim_fuzzy_pi0_fig}.}}
+\label{second_fuzzy_pi0_fig}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=110mm]{Figures/second_fuzzy_nue.png}
+\end{center}
+\caption{\textit{The same $\nu_e$CC event as shown in \autoref{raw_fuzzy_nue_fig} and \autoref{prelim_fuzzy_nue_fig}, now after second stage merging. The color of clusters in this plot are unrelated to the colors of clusters in \autoref{raw_fuzzy_nue_fig} and \autoref{prelim_fuzzy_nue_fig}.}}
+\label{second_fuzzy_nue_fig}
+\end{figure}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Quick Reference: List Of Algorithms}
+The following is a list of all merging algorithms (in alphabetical order) as of the time this document was produced, along with a clickable link to the section of this document that describes that algorithm.
+\begin{enumerate}
+\item CBAlgoAngleAlign \textbf{(\autoref{sec:CBAlgoAngleAlign})}
+\item CBAlgoAngleCompat \textbf{(\autoref{sec:CBAlgoAngleCompat})}
+\item CBAlgoAngleIncompat \textbf{(\autoref{sec:CBAlgoAngleIncompat})}
+\item CBAlgoAngleSeparate \textbf{(\autoref{sec:CBAlgoAngleSeparate})}
+\item CBAlgoArray \textbf{(\autoref{sec:CBAlgoArray})}
+\item CBAlgoCenterOfMass \textbf{(\autoref{sec:CBAlgoCenterOfMass})}
+\item CBAlgoCenterOfMassSmall \textbf{(\autoref{sec:CBAlgoCenterOfMassSmall})}
+\item CBAlgoFake \textbf{(\autoref{sec:CBAlgoFake})}
+\item CBAlgoMergeAll \textbf{(\autoref{sec:CBAlgoMergeAll})}
+\item CBAlgoMergeTinyWithBig \textbf{(\autoref{sec:CBAlgoMergeTinyWithBig})}
+\item CBAlgoOutOfConeSeparate \textbf{(\autoref{sec:CBAlgoOutOfConeSeparate})}
+\item CBAlgoPolyContain \textbf{(\autoref{sec:CBAlgoPolyContain})}
+\item CBAlgoPolyHitOverlap \textbf{(\autoref{sec:CBAlgoPolyHitOverlap})}
+\item CBAlgoPolyOverlap \textbf{(\autoref{sec:CBAlgoPolyOverlap})}
+\item CBAlgoPolyShortestDist \textbf{(\autoref{sec:CBAlgoPolyShortestDist})}
+\item CBAlgoProhibitAllTracks \textbf{(\autoref{sec:CBAlgoProhibitAllTracks})}
+\item CBAlgoProhibitBigClusters \textbf{(\autoref{sec:CBAlgoProhibitBigClusters})}
+\item CBAlgoShortestDist \textbf{(\autoref{sec:CBAlgoShortestDist})}
+\item CBAlgoStartInCone \textbf{(\autoref{sec:CBAlgoStartInCone})}
+\item CBAlgoStartInPoly \textbf{(\autoref{sec:CBAlgoStartInPoly})}
+\item CBAlgoStartNearEnd \textbf{(\autoref{sec:CBAlgoStartNearEnd})}
+\item CBAlgoStartTrack \textbf{(\autoref{sec:CBAlgoStartTrack})}
+\item CBAlgoTrackSeparate \textbf{(\autoref{sec:CBAlgoTrackSeparate})}
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Algorithms Used In Preliminary (First-Stage) Merging}\label{sec:PrelimMerging}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=150mm]{Figures/prelim_merge_algos.png}
+\end{center}
+\caption{\textit{Diagrams describing the three preliminary merge algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
+\label{prelim_merge_algos_fig}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=110mm]{Figures/prelim_prohibit_algos.png}
+\end{center}
+\caption{\textit{Diagrams describing the three preliminary prohibit algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
+\label{prelim_prohibit_algos_fig}
+\end{figure}
+
+
+\subsection{CBAlgoTrackSeparate}\label{sec:CBAlgoTrackSeparate}
+This algorithm is a prohibit algorithm. Its purpose is to prevent the merging of two clusters in the case that both clusters qualify as ``track-like". If the ``UseEP" flag is set to true (which it is in the instance of this algorithm used for preliminary merging), then a cluster is considered ``track-like" if its principal eigenvalue is greater than some cutoff value. This cutoff value is set to 0.99000.
+
+
+\subsection{CBAlgoOutOfConeSeparate}\label{sec:CBAlgoOutOfConeSeparate}
+This algorithm is a prohibit algorithm. Its purpose is to prevent the merging of two clusters in the case that the angle between the direction of a cluster (end-start) and the line connecting the cluster's start point and the start point of a second cluster is too large. The first cluster needs to be a "good" and "large" cluster to be considered by this algorithm.\\
+
+The maximum angle separation is set to 20 degrees for preliminary merging.\\
+ SetMinLength(15.);\\
+    SetMinHits(20);\\
+    SetStartAngleFalloff(2800); // in cm\^2 \\
+(xxx davidc maybe can add more details to this? not sure exactly what "SetStartAngleFalloff" does)
+    
+    
+\subsection{CBAlgoShortestDist}\label{sec:CBAlgoShortestDist}
+This algorithm is a merging algorithm. It takes in the start, and end points of each of the two input clusters and computes the distance-squared (to save computing time in taking a square root) between each of the four pairs of points (start1-to-start2, start1-to-end2, end1-to-start2, end1-to-end2). If the minimum of these four distances is less than a cutoff value, the two clusters are merged.\\\\
+For preliminary merging, the minimum number of hits for each cluster to be considered is set to 10 and the shortest distance-squared value is set to 5 cm.
+
+\subsection{CBAlgoStartTrack}\label{sec:CBAlgoStartTrack}
+This algorithm is a merging algorithm. Its purpose is to merge track-like clusters if they are leading into a shower-like cluster. This is because Fuzzycluster often creates short, track-like clusters at the beginning of showers. This merging is particularly important because the leading track-like cluster contains most of the $\frac{dE}{dx}$ information that is important for identifying the particle that created this shower.\\\\
+This algorithm first identifies if one of the clusters is track-like by requiring that cluster's principal eigenvalue be greater than some cutoff, currently set to 0.99000. Then, it identifies if the other cluster is shower-like by asking that the width of the cluster is greater than some cutoff, currently set to 1mm, as well as asking that the opening angle of the cluster is greater than some cutoff, currently set to 0.15, as well as asking that the principal eigenvalue is less than some cutoff, currently set to 0.99000. Then, it asks that the endpoint of the track-like cluster is within the polygon outlining the shower-like cluster. If all of these conditions are met, the two clusters are merged.
+
+\subsection{CBAlgoPolyContain}\label{sec:CBAlgoPolyContain}
+This algorithm is a merging algorithm. Its purpose is to merge two clusters if the polygon object outlining one cluster is completely contained with the polygon object outlining the other cluster.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Algorithms Used In Second-Stage Merging} \label{sec:SecondMerging}
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=150mm]{Figures/second_merge_algos.png}
+\end{center}
+\caption{\textit{Diagrams describing the three secondinary merge algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
+\label{second_merge_algos_fig}
+\end{figure}
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=150mm]{Figures/second_prohibit_algos.png}
+\end{center}
+\caption{\textit{Diagrams describing the three secondinary prohibit algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
+\label{second_prohibit_algos_fig}
+\end{figure}
+\subsection{CPAlgoIgnoreTracks}\label{sec:CPAlgoIgnoreTracks}
+\subsection{CBAlgoTrackSeparate}
+\subsection{CBAlgoOutOfConeSeparate}
+\subsection{CBAlgoAngleIncompat}\label{sec:CBAlgoAngleIncompat}
+\subsection{CBAlgoCenterOfMass}\label{sec:CBAlgoCenterOfMass}
+\subsection{CBAlgoPolyOverlap}\label{sec:CBAlgoPolyOverlap}
+\subsection{CBAlgoPolyShortestDist}\label{sec:CBAlgoPolyShortestDist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Other Algorithms}
+
+\subsection{CBAlgoAngleAlign}\label{sec:CBAlgoAngleAlign}
+\subsection{CBAlgoAngleCompat}\label{sec:CBAlgoAngleCompat}
+\subsection{CBAlgoAngleSeparate}\label{sec:CBAlgoAngleSeparate}
+\subsection{CBAlgoArray}\label{sec:CBAlgoArray}
+\subsection{CBAlgoCenterOfMassSmall}\label{sec:CBAlgoCenterOfMassSmall}
+\subsection{CBAlgoMergeAll}\label{sec:CBAlgoMergeAll}
+\subsection{CBAlgoMergeTinyWithBig}\label{sec:CBAlgoMergeTinyWithBig}
+\subsection{CBAlgoPolyHitOverlap}\label{sec:CBAlgoPolyHitOverlap}
+\subsection{CBAlgoProhibitAllTracks}\label{sec:CBAlgoProhibitAllTracks}
+\subsection{CBAlgoProhibitBigClusters}\label{sec:CBAlgoProhibitBigClusters}
+\subsection{CBAlgoStartInCone}\label{sec:CBAlgoStartInCone}
+\subsection{CBAlgoStartInPoly}\label{sec:CBAlgoStartInPoly}
+\subsection{CBAlgoStartNearEnd}\label{sec:CBAlgoStartNearEnd}
+
+
+\subsection{CBAlgoFake}
+\label{sec:CBAlgoFake}
+Blah this is stuff about the fake algo.
+
+\end{document}
+
