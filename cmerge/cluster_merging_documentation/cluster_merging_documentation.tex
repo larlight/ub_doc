@@ -55,9 +55,17 @@
 \date{\today}
 
 
-
 \begin{document}
 \maketitle
+
+\section{to-do in this documentation}
+\begin{itemize}
+\item fill in the missing stuff so far (marked with ``davidc" or ``xxx")
+\item fill in the ``other algorithms" section
+\item combine this documentation with ``matching" documentation
+\item include all of the priority, prohibit algorithms that are not included yet (i've included all merge algorithms, and the prohibit/prioritiy algorithms used in first/second stage merging, but not all prohibit/priority algos that aren't used)
+\item appendix on polygons
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Overview}
@@ -221,14 +229,29 @@ This algorithm is a merging algorithm. Its purpose is to merge two clusters if t
 \caption{\textit{Diagrams describing the three secondinary prohibit algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
 \label{second_prohibit_algos_fig}
 \end{figure}
-\subsection{CPAlgoIgnoreTracks}\label{sec:CPAlgoIgnoreTracks}
-\subsection{CBAlgoTrackSeparate}
-\subsection{CBAlgoOutOfConeSeparate}
-\subsection{CBAlgoAngleIncompat}\label{sec:CBAlgoAngleIncompat}
-\subsection{CBAlgoCenterOfMass}\label{sec:CBAlgoCenterOfMass}
-\subsection{CBAlgoPolyOverlap}\label{sec:CBAlgoPolyOverlap}
-\subsection{CBAlgoPolyShortestDist}\label{sec:CBAlgoPolyShortestDist}
 
+
+\subsection{CPAlgoIgnoreTracks}\label{sec:CPAlgoIgnoreTracks}
+This is a priority algorithm that identifies all clusters remaining after preliminary merging that are track-like, and prevents these clusters from being considered by second stage merging algorithms. This algorithm decides if a cluster is track-like by requiring the clusters' modified hit density is less than some cutoff (1.4), or multi-hit-wires is less than some cutoff (3.5), or log(1-principal eigenvalue) is less than some cutoff (-6).
+
+\subsection{CBAlgoTrackSeparate}
+This is a prohibit algorithm, and is re-used second stage merging exactly as is described in the preliminary merge section, \autoref{sec:CBAlgoTrackSeparate}.
+
+\subsection{CBAlgoOutOfConeSeparate}
+This is a prohibit algorithm, and is re-used second stage merging exactly as is described in the preliminary merge section, \autoref{sec:CBAlgoOutOfConeSeparate}.
+
+\subsection{CBAlgoAngleIncompat}\label{sec:CBAlgoAngleIncompat}
+This is a prohibit algorithm which prohibits two clusters from being merged if they are both reasonably large clusters and the angle difference between each cluster's 2d angle is greater than some cutoff. Clusters are ``reasonably large" if they each have above a certain cutoff number of hits (50), and they both have length larger than some cutoff value (20cm). This algorithm has a flag to allow for backwards-reconstructed clusters (since the 2d angle depends on the cluster's start and end point positions), and this flag is set to true for second stage merging. This algorithm also has an option to have a varying cutoff value for the angle difference based on the opening angles of each cluster. This flag is set to false for second stage merging, so a flat cutoff value of 2d angle difference is used (10 degrees).
+
+\subsection{CBAlgoCenterOfMass}\label{sec:CBAlgoCenterOfMass}
+This is a merging algorithm designed mainly for merging small clusters into larger ones. (xxx davidc can fill this in? unless i wrote it, in which case i'll fill this in)
+
+
+\subsection{CBAlgoPolyOverlap}\label{sec:CBAlgoPolyOverlap}
+This is a merging algorithm, designed to merge two clusters together if a fraction of their polygon's overlapping area is greater than some cutoff. The cutoff used in second stage merging is 0, so any overlap will merge the clusters. This algorithm also requires that both clusters have greater than some cutoff number of hits (0 for second stage merging).
+
+\subsection{CBAlgoPolyShortestDist}\label{sec:CBAlgoPolyShortestDist}
+This is a merging algorithm that is mainly meant to handle cases where CBAlgoPolyOverlap (\autoref{sec:CBAlgoPolyOverlap}) has two clusters which come \textit{very close} to overlapping, but do not actually overlap. This algorithm computes the shortest distance-squared between the two polygons that describe the input clusters, and if this distance-squared is below some cutoff distance (1cm$^2$), the two polygons are merged. This algorithm also requires that both input clusters have above some minimum number of hits (30) and both clusters have below some maximum number of hits (9999).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Other Algorithms}
 
