@@ -274,5 +274,80 @@ This is a merging algorithm that is mainly meant to handle cases where CBAlgoPol
 \label{sec:CBAlgoFake}
 Blah this is stuff about the fake algo.
 
+
+\newpage
+
+\appendix
+
+\section{Polygon2D}
+
+The LarLite merging framework heavily relies on geometric correlations between clusters. Each cluster corresponds 
+to a list of hits spatially confined to a certain region of Time-Wire space. To aid in calculating the geometric 
+correlations between different clusters the concept of a polygon associated with each cluster was developed. 
+The concept of polygon we use is that of a bounded 2D area in Wire-Time space that roughly encloses the hits associated
+with a cluster. Fig.~\ref{fig:cluster_polygon_example} shows an example of the polygons associated with the clusters
+in a BNB event.
+We will briefly describe the Polygon2D class we have prepared and how a polygon is constructed for a given
+cluster. How polygons are used in cluster matching algorithms was already presented in each algorithm's description.
+
+
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=150mm]{Figures/cluster_polygon_example.png}
+\end{center}
+\caption{\textit{Example of polygons associated with clusters in a BNB event. Left: hits are represented as stars. 
+Hits belonging to different clusters are shown in different colors. Polygons associated with each cluster are shown as
+bounding lines with the same color as the hits in that cluster. Right: event display showing the hits in this event
+color-coded by the amount of charge in each hit.}}
+\label{fig:cluster_polygon_example}
+\end{figure}
+
+\subsection{Polygon2D Class}
+\paragraph{} A Polygon2D object is essentially an ordered list of 2D points that define the edges of a bounded surface
+on a plane. The Polygon2D class has the following functionality:\newline
+\newline
+\textbf{Constructors}:\newline
+Polygon2D(): creates a Polygon2D object with an empty list of edges.\newline
+Polygon2D(std::vector\textless std::pair\textless float,float\textgreater \textgreater \&points): polygon edges assigned from input list.\newline
+Polygon2D( Polygon2D \&poly1, Polygon2D \&poly2): returns intersection polygon.\newline
+\textbf{Intrinsic Operations}\newline
+float Area(): returns the area of the surface enclosed by the polygon\newline
+float Perimeter(): returns the perimeter as measured by the sum-distance between consecutive edges.\newline
+void UntanglePolygon(): Checks that the list of edges that defines the polygon is ordered correctly (no two lines cross)\newline
+\textbf{External Comparisons}:\newline
+bool PolyOverlap(const Polygon2D \&Poly2): determine if two polygons overlap in any way.\newline
+bool PointInside(const std::pair\textless float,float\textgreater \&point): determine if a point is inside the polygon\newline
+bool Contained(const Polygon2D \&poly2): determine if a polygon is fully contained within this polygon\newline
+
+
+\subsection{Polygon Construction}
+\paragraph{}To go from a list of hits in a cluster to a Polygon2D object we need to find a
+way to determine the list of points that will define the boundary of the polygon.
+\paragraph{}Polygons are created within the ClusterParams building-stage. This happens in \newline
+RecoTool/ClusterRecoUtil/ClusterParamsAlg.cxx in the FillPolygon() function.
+Within this function, the GeometryUtilities (LArUtil/GeometryUtilities.h) SelectPolygonHitList
+function is called.
+\paragraph{}Several steps are taken to construct a Polygon2D object that outlines a list of clusters in a hit.
+This procedure can be seen in Fig.~\ref{fig:BoundingPolygon}.
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=140mm]{Figures/BoundingPolygon.pdf}
+\end{center}
+\caption{\textit{Procedure followed to create a Polygon2D associated to a cluster object}}
+\label{fig:BoundingPolygon}
+\end{figure}
+\paragraph{}1) At first, a list of hits, ordered in decreasing hit charge, is created.
+\paragraph{}2) subset list, containing all
+the highest-charge hits whose total charge adds up to $\alpha$\% of the total cluster's charge is prepared. The 
+default value of $\alpha$ used is 95. This step is taken to ensure we end up with a polygon that nicely matches
+the cluster outline. We were of the idea that tt is better to exclude very low-amplitude hits if these would 
+cause the polygon to grow too much in size and encompass large regions of empty area.
+\paragraph{}3) Subsequently, the four hits that define an Axis-Aligned Bounded-Box which contains all sub-list hits
+are identified. At this stage, we have (up to) four points defining a bounding rectangle.
+\paragraph{}4) and 5) Next, we look for the hits closest to the corners of the rectangle. This gives us (up to) eight hits
+representing the edges of a polygon.
+\paragraph{}6) Finally, because a polygon is an ordered list of edges, we need to untangle the edges we found to make
+sure the volume bounded by the polygon is well defined.
+
 \end{document}
 
