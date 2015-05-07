@@ -58,6 +58,13 @@
 \begin{document}
 \maketitle
 
+\newpage
+
+\tableofcontents
+
+\newpage
+
+
 \section{to-do in this documentation}
 \begin{itemize}
 \item fill in the missing stuff so far (marked with ``davidc" or ``xxx")
@@ -168,6 +175,7 @@ The following is a list of all merging algorithms (in alphabetical order) as of 
 \end{enumerate}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Algorithms Used In Preliminary (First-Stage) Merging}\label{sec:PrelimMerging}
 
 \begin{figure}[h!]
@@ -182,94 +190,195 @@ The following is a list of all merging algorithms (in alphabetical order) as of 
 \begin{center}
 \includegraphics[width=110mm]{Figures/prelim_prohibit_algos.png}
 \end{center}
-\caption{\textit{Diagrams describing the three preliminary prohibit algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
+\caption{\textit{Diagrams describing the three preliminary prohibit algorithms used. Each blob (blue, or orange) represents
+a different cluster. For more information on the individual algorithms, see their corresponding subsections within this 
+section.}}
 \label{prelim_prohibit_algos_fig}
 \end{figure}
 
 
 \subsection{CBAlgoTrackSeparate}\label{sec:CBAlgoTrackSeparate}
-This algorithm is a prohibit algorithm. Its purpose is to prevent the merging of two clusters in the case that both clusters qualify as ``track-like". If the ``UseEP" flag is set to true (which it is in the instance of this algorithm used for preliminary merging), then a cluster is considered ``track-like" if its principal eigenvalue is greater than some cutoff value. This cutoff value is set to 0.99000.
+This algorithm is a prohibit algorithm. Its purpose is to prevent the merging of two clusters in the case that both
+clusters qualify as ``track-like". If the ``UseEP" flag is set to true (which it is in the instance of this algorithm 
+used for preliminary merging), then a cluster is considered ``track-like" if its principal eigenvalue is greater than 
+some cutoff value. This cutoff value is set to 0.99000.
 
 
 \subsection{CBAlgoOutOfConeSeparate}\label{sec:CBAlgoOutOfConeSeparate}
-This algorithm is a prohibit algorithm. Its purpose is to prevent the merging of two clusters in the case that the angle between the direction of a cluster (end-start) and the line connecting the cluster's start point and the start point of a second cluster is too large. The first cluster needs to be a "good" and "large" cluster to be considered by this algorithm.\\
+This algorithm is a prohibit algorithm. Its purpose is to prevent the merging of two clusters in the case that the angle
+between the direction of a cluster (end-start) and the line connecting the cluster's start point and the start point of 
+a second cluster is too large. The first cluster needs to be a "good" and "large" cluster to be considered by this 
+algorithm.\\
+The angle cut becomes tighter as the separation between the two cluster's start points increases.
 
 The maximum angle separation is set to 20 degrees for preliminary merging.\\
- SetMinLength(15.);\\
-    SetMinHits(20);\\
-    SetStartAngleFalloff(2800); // in cm\^2 \\
-(xxx davidc maybe can add more details to this? not sure exactly what "SetStartAngleFalloff" does)
+SetMinLength(15.);\\
+SetMinHits(20);\\
+SetStartAngleFalloff(2800); // in cm\^2 \\
+    
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=150mm]{Figures/CBAlgoOutOfConeSeparate.pdf}
+\end{center}
+\caption{\textit{Diagram demonstrating how CBAlgoOutOfConeSeparate works. A cut is placed on the maximum allowed
+angle between a cluster's direction and the line connecting that cluster's start point and the start point of
+the second cluster under consideration. As the two clusters become more separated, the constraint on this angle
+becomes tighter.}}
+\label{fig:CBAlgoOutOfConeSeparate}
+\end{figure}
     
     
 \subsection{CBAlgoShortestDist}\label{sec:CBAlgoShortestDist}
-This algorithm is a merging algorithm. It takes in the start, and end points of each of the two input clusters and computes the distance-squared (to save computing time in taking a square root) between each of the four pairs of points (start1-to-start2, start1-to-end2, end1-to-start2, end1-to-end2). If the minimum of these four distances is less than a cutoff value, the two clusters are merged.\\\\
-For preliminary merging, the minimum number of hits for each cluster to be considered is set to 10 and the shortest distance-squared value is set to 5 cm.
+This algorithm is a merging algorithm. It takes in the start, and end points of each of the two input clusters and 
+computes the distance-squared (to save computing time in taking a square root) between each of the four pairs of points 
+(start1-to-start2, start1-to-end2, end1-to-start2, end1-to-end2). If the minimum of these four distances is less than
+a cutoff value, the two clusters are merged.\\\\
+For preliminary merging, the minimum number of hits for each cluster to be considered is set to 10 and the shortest 
+distance-squared value is set to 5 cm.
 
 \subsection{CBAlgoStartTrack}\label{sec:CBAlgoStartTrack}
-This algorithm is a merging algorithm. Its purpose is to merge track-like clusters if they are leading into a shower-like cluster. This is because Fuzzycluster often creates short, track-like clusters at the beginning of showers. This merging is particularly important because the leading track-like cluster contains most of the $\frac{dE}{dx}$ information that is important for identifying the particle that created this shower.\\\\
-This algorithm first identifies if one of the clusters is track-like by requiring that cluster's principal eigenvalue be greater than some cutoff, currently set to 0.99000. Then, it identifies if the other cluster is shower-like by asking that the width of the cluster is greater than some cutoff, currently set to 1mm, as well as asking that the opening angle of the cluster is greater than some cutoff, currently set to 0.15, as well as asking that the principal eigenvalue is less than some cutoff, currently set to 0.99000. Then, it asks that the endpoint of the track-like cluster is within the polygon outlining the shower-like cluster. If all of these conditions are met, the two clusters are merged.
+This algorithm is a merging algorithm. Its purpose is to merge track-like clusters if they are leading into a shower-like
+cluster. This is because Fuzzycluster often creates short, track-like clusters at the beginning of showers. This merging 
+is particularly important because the leading track-like cluster contains most of the $\frac{dE}{dx}$ information that is
+important for identifying the particle that created this shower.\\\\
+This algorithm first identifies if one of the clusters is track-like by requiring that cluster's principal eigenvalue be
+greater than some cutoff, currently set to 0.99000. Then, it identifies if the other cluster is shower-like by asking that 
+the width of the cluster is greater than some cutoff, currently set to 1mm, as well as asking that the opening angle of 
+the cluster is greater than some cutoff, currently set to 0.15, as well as asking that the principal eigenvalue is less 
+than some cutoff, currently set to 0.99000. Then, it asks that the endpoint of the track-like cluster is within the polygon
+outlining the shower-like cluster. If all of these conditions are met, the two clusters are merged.
 
 \subsection{CBAlgoPolyContain}\label{sec:CBAlgoPolyContain}
-This algorithm is a merging algorithm. Its purpose is to merge two clusters if the polygon object outlining one cluster is completely contained with the polygon object outlining the other cluster.
+This algorithm is a merging algorithm. Its purpose is to merge two clusters if the polygon object outlining one cluster
+is completely contained with the polygon object outlining the other cluster.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newpage
 \section{Algorithms Used In Second-Stage Merging} \label{sec:SecondMerging}
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=150mm]{Figures/second_merge_algos.png}
+\includegraphics[width=140mm]{Figures/second_merge_algos.png}
 \end{center}
-\caption{\textit{Diagrams describing the three secondinary merge algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
+\caption{\textit{Diagrams describing the three secondinary merge algorithms used. Each blob (blue, or orange) represents 
+a different cluster. For more information on the individual algorithms, see their corresponding subsections within this 
+section.}}
 \label{second_merge_algos_fig}
 \end{figure}
 
 \begin{figure}[h!]
 \begin{center}
-\includegraphics[width=150mm]{Figures/second_prohibit_algos.png}
+\includegraphics[width=140mm]{Figures/second_prohibit_algos.png}
 \end{center}
-\caption{\textit{Diagrams describing the three secondinary prohibit algorithms used. Each blob (blue, or orange) represents a different cluster. For more information on the individual algorithms, see their corresponding subsections within this section.}}
+\caption{\textit{Diagrams describing the three secondinary prohibit algorithms used. Each blob (blue, or orange)
+represents a different cluster. For more information on the individual algorithms, see their corresponding 
+subsections within this section.}}
 \label{second_prohibit_algos_fig}
 \end{figure}
 
 
 \subsection{CPAlgoIgnoreTracks}\label{sec:CPAlgoIgnoreTracks}
-This is a priority algorithm that identifies all clusters remaining after preliminary merging that are track-like, and prevents these clusters from being considered by second stage merging algorithms. This algorithm decides if a cluster is track-like by requiring the clusters' modified hit density is less than some cutoff (1.4), or multi-hit-wires is less than some cutoff (3.5), or log(1-principal eigenvalue) is less than some cutoff (-6).
+This is a priority algorithm that identifies all clusters remaining after preliminary merging that are track-like, and
+prevents these clusters from being considered by second stage merging algorithms. This algorithm decides if a cluster is
+track-like by requiring the clusters' modified hit density is less than some cutoff (1.4), or multi-hit-wires is less 
+than some cutoff (3.5), or log(1-principal eigenvalue) is less than some cutoff (-6).
 
 \subsection{CBAlgoTrackSeparate}
-This is a prohibit algorithm, and is re-used second stage merging exactly as is described in the preliminary merge section, \autoref{sec:CBAlgoTrackSeparate}.
+This is a prohibit algorithm, and is re-used second stage merging exactly as is described in the preliminary merge section,
+\autoref{sec:CBAlgoTrackSeparate}.
 
 \subsection{CBAlgoOutOfConeSeparate}
-This is a prohibit algorithm, and is re-used second stage merging exactly as is described in the preliminary merge section, \autoref{sec:CBAlgoOutOfConeSeparate}.
+This is a prohibit algorithm, and is re-used second stage merging exactly as is described in the preliminary merge section,
+\autoref{sec:CBAlgoOutOfConeSeparate}.
 
 \subsection{CBAlgoAngleIncompat}\label{sec:CBAlgoAngleIncompat}
-This is a prohibit algorithm which prohibits two clusters from being merged if they are both reasonably large clusters and the angle difference between each cluster's 2d angle is greater than some cutoff. Clusters are ``reasonably large" if they each have above a certain cutoff number of hits (50), and they both have length larger than some cutoff value (20cm). This algorithm has a flag to allow for backwards-reconstructed clusters (since the 2d angle depends on the cluster's start and end point positions), and this flag is set to true for second stage merging. This algorithm also has an option to have a varying cutoff value for the angle difference based on the opening angles of each cluster. This flag is set to false for second stage merging, so a flat cutoff value of 2d angle difference is used (10 degrees).
+This is a prohibit algorithm which prohibits two clusters from being merged if they are both reasonably large clusters and 
+the angle difference between each cluster's 2d angle is greater than some cutoff. Clusters are ``reasonably large" if they
+each have above a certain cutoff number of hits (50), and they both have length larger than some cutoff value (20cm). This
+algorithm has a flag to allow for backwards-reconstructed clusters (since the 2d angle depends on the cluster's start and
+end point positions), and this flag is set to true for second stage merging. This algorithm also has an option to have a 
+varying cutoff value for the angle difference based on the opening angles of each cluster. This flag is set to false for 
+second stage merging, so a flat cutoff value of 2d angle difference is used (10 degrees).
 
 \subsection{CBAlgoCenterOfMass}\label{sec:CBAlgoCenterOfMass}
-This is a merging algorithm designed mainly for merging small clusters into larger ones. (xxx davidc can fill this in? unless i wrote it, in which case i'll fill this in)
-
+This is a merging algorithm designed mainly for merging small clusters into larger ones.\\
+A small cluster's Center Of Mass (COM) is calculated as the weighted average (Wire [cm], Time [cm]) of all hits, weighted
+by charge. In order to allow merging, the COM needs to be found either:\\
+1) inside the large cluster's polygon.\\
+2) inside a cone defined by the large cluster's direction and opening angle\\
+3) next to the segment connecting the large cluster's start and end point.\\
+One, two or all three of these conditions can be used to determine if merging should proceed.\\
+\\
+Configuration used in 2nd stage merging:\\
+if any of the conditions listed above are met merging proceeds.\\
+SetMaxHitsSmallClus(10) (set number of hits that define a small cluster)\\
+SetMinHitsBigClus(40) (set number of hits that define a big cluster)\\
+SetMaxDistance(20) (max. square distance between COM and start-end direction of large cluster)\\
+SetLengthReach(3) (spatial extent of cone for large cluster. This factor is the factor multiplying
+the length of the cluster and defines the length of the cone)\\
+UseCOMInPoly(True)\\
+UseCOMInCone(True)\\
+UseCOMNearClus(True)\\
+\begin{figure}[h!]
+\begin{center}
+\includegraphics[width=150mm]{Figures/CBAlgoCenterOfMass.pdf}
+\end{center}
+\caption{\textit{Diagrams describing how CBAlgoCenterOfMass works. A large cluster is compared to a small one. 
+Check if the COM is either 1) inside the large cluster's polygon. 2) inside a cone defined by the
+long cluster's direction and opening angle. 3) near the line connecting the large cluster's start and end point.
+Which of these three conditions are met can be set when the algorithm is initialized.}}
+\label{fig:CBAlgoCenterOfMass}
+\end{figure}
 
 \subsection{CBAlgoPolyOverlap}\label{sec:CBAlgoPolyOverlap}
-This is a merging algorithm, designed to merge two clusters together if a fraction of their polygon's overlapping area is greater than some cutoff. The cutoff used in second stage merging is 0, so any overlap will merge the clusters. This algorithm also requires that both clusters have greater than some cutoff number of hits (0 for second stage merging).
+This is a merging algorithm, designed to merge two clusters together if a fraction of their polygon's overlapping area is 
+greater than some cutoff. The cutoff used in second stage merging is 0, so any overlap will merge the clusters. This 
+algorithm also requires that both clusters have greater than some cutoff number of hits (0 for second stage merging).
 
 \subsection{CBAlgoPolyShortestDist}\label{sec:CBAlgoPolyShortestDist}
-This is a merging algorithm that is mainly meant to handle cases where CBAlgoPolyOverlap (\autoref{sec:CBAlgoPolyOverlap}) has two clusters which come \textit{very close} to overlapping, but do not actually overlap. This algorithm computes the shortest distance-squared between the two polygons that describe the input clusters, and if this distance-squared is below some cutoff distance (1cm$^2$), the two polygons are merged. This algorithm also requires that both input clusters have above some minimum number of hits (30) and both clusters have below some maximum number of hits (9999).
+This is a merging algorithm that is mainly meant to handle cases where CBAlgoPolyOverlap (\autoref{sec:CBAlgoPolyOverlap}) 
+has two clusters which come \textit{very close} to overlapping, but do not actually overlap. This algorithm computes the
+shortest distance-squared between the two polygons that describe the input clusters, and if this distance-squared is below
+some cutoff distance (1cm$^2$), the two polygons are merged. This algorithm also requires that both input clusters have 
+above some minimum number of hits (30) and both clusters have below some maximum number of hits (9999).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Other Algorithms}
 
 \subsection{CBAlgoAngleAlign}\label{sec:CBAlgoAngleAlign}
+After requiring a minimum number of hits in both cluster, the algorithm merges clusters if the angle between their
+direction is smaller than e certain settable value. A flag to allow for a 180 degree ambiguity (in case the start-end
+points for the cluster were swapped) in a cluster's direction can be turned on.
 \subsection{CBAlgoAngleCompat}\label{sec:CBAlgoAngleCompat}
+Identical to CBAlgoAngleAlign.
 \subsection{CBAlgoAngleSeparate}\label{sec:CBAlgoAngleSeparate}
 \subsection{CBAlgoArray}\label{sec:CBAlgoArray}
 \subsection{CBAlgoCenterOfMassSmall}\label{sec:CBAlgoCenterOfMassSmall}
+This algorithm is meant to merge small clusters together. Both clusters are required to have less than a settable 
+number of hits. Merging can happen if any of these conditions are met (which conditions need to be met is decided
+by the user):\\
+1) the COM of one cluster is in the polygon of the other.\\
+2) the two COM are closer to each other than a settable parameter.\\
+3) if either COM is close to the start-end segment of the other cluster.\\
 \subsection{CBAlgoMergeAll}\label{sec:CBAlgoMergeAll}
+A trivial merging algorithm that merges all clusters in an plane. This algorithm was heavily used to simulate
+perfect merging on single-electron and single-photon simulated event.
 \subsection{CBAlgoMergeTinyWithBig}\label{sec:CBAlgoMergeTinyWithBig}
-\subsection{CBAlgoPolyHitOverlap}\label{sec:CBAlgoPolyHitOverlap}
+After having set the threshold to determine what defines a big and small cluster, if one cluster is found to be
+big and the other small, merging proceeds if any of the edges of the polygon of one cluster is found to be within
+a settable distance to any of the edges of the polygon of the other cluster.
 \subsection{CBAlgoProhibitAllTracks}\label{sec:CBAlgoProhibitAllTracks}
 \subsection{CBAlgoProhibitBigClusters}\label{sec:CBAlgoProhibitBigClusters}
 \subsection{CBAlgoStartInCone}\label{sec:CBAlgoStartInCone}
+Given a large cluster with a minimum number of hits and a minimum cluster length, determine if the other cluster's
+start point is contained in this cluster's cone. A cone is defined as a triangular region that extends in the cluster's
+direction with opening angle equal to the cluster's opening angle. The extent of this cone can be set as the cluster's length
+times a definable factor.
 \subsection{CBAlgoStartInPoly}\label{sec:CBAlgoStartInPoly}
+Determine if the start point of one cluster is in the polygon of the other. This other cluster must have more than a settable
+number of hits.
 \subsection{CBAlgoStartNearEnd}\label{sec:CBAlgoStartNearEnd}
-
-
+Check if two clusters are back-to-back. If the start point of cluster A is found to be close to the end point of cluster B
+the geometrically preceeding cluster must have more than a settable minimum number of hits and an opening angle smaller
+than a settable value.
 \subsection{CBAlgoFake}
 \label{sec:CBAlgoFake}
 Blah this is stuff about the fake algo.
