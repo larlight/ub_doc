@@ -22,6 +22,7 @@
 	}
 
 \usepackage{multirow}
+\usepackage{wrapfig}
 
 % Margins
 \topmargin=-0.45in
@@ -175,6 +176,61 @@ returned by the algorithm. Fig.~\ref{fig:StartPointCompat} illustrates how CFAlg
 reconstructed using two planes, with the cluster information on the 3rd plane..}}
 \label{fig:StartPointCompat.}
 \end{figure}
+
+\newpage
+
+\subsection{CFAlgoTimeOverlap}
+This algorithm calculates score based on the cluster overlap in time. It works for as few as 2 planes.
+\par A vector of clusters (1 from each plane) is passed to the Algo; a score is returned for every pair and in the end the match with the best score wins the matching prize.  For this algo, for every combination of clusters, the cluster with the largest timespan is used as the demoninator in the score ratio. In Figure \ref{fig:time}, the correct cluster matches are [A, 1, a] and [B, 2, b], but all permutations are passed to the algo in order to determine this.  One (incorrect) cluster combination passed to the Algo is [ A, 2, a ].  Notice here that it is not enough to take just time different into account, because the time differences between the 2 cluster pairs are too similar--we may end up with mismatched pairs. To handle this we add a requirement that the start points be within 10 cm of each other. We also handle the case of incorrectly reconstructed start and end points by making all the starting points the ones that occur earliest in time. Using this scheme, cluster combination [ A, 2, a] will not get a better score than the correct match [ A, 1, a ].
+
+%\begin{wrapfigure}{r}{0.1\textwidth}
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=0.5]{Figures/MatchAlgo_CFAlgoTimeOverlap_Description.png}
+\end{center}
+\caption{Illustration highlighting how CFAlgoTimeOverlap calculates score for cluster pairs.  }
+\label{fig:time}
+\end{figure}
+%\end{wrapfigure}
+
+
+\newpage
+
+\subsection{CFAlgo3DAngle}
+This algorithm only works for 3 or more planes (or rather, for 3 or greater cluster pairs).  
+\par CFAlgo3DAngle calculates score based on similarity in theta and phi angles (Figure \ref{fig:angle}). Need 2 clusters in different planes to calculate one angle (theta or phi), so for each 3-cluster combination, we end up with 2 thetas, and 2 phis.  We then compare these angles similarly to how we compared time.  A caveat: very often one of the 3 planes will look more like a blob of charge than an object with direction (Figure \ref{fig:angles}); in this case, start and end points can be misassigned, and the angle comparison loses its effectiveness.  To take this into account, we add in a charge weight that acts in conjunction with the angle comparison part of the algo. Examples of successful matches shown in Figure \ref{fig:ex}.   
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=0.5]{Figures/Angles.png}
+\end{center}
+\caption{Angle definitions used in 3DAngle Algo }
+\label{fig:angle}
+\end{figure}
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=0.4]{Figures/MatchAlgo_CFAlgo3DAngle_Description.png}
+\end{center}
+\caption{Illustration showing case where 3rd plane can be blobby and non-directional. }
+\label{fig:angles}
+\end{figure}
+
+\newpage
+
+\begin{figure}[!h]
+\begin{center}
+\includegraphics[scale=0.25]{Figures/MatchAlgo_CFAlgoTimeOverlap_MatchExample.png}
+\hspace{0.1 cm}
+\includegraphics[scale=0.25]{Figures/MatchAlgo_CFAlgo3DAngle_MatchExample.png}
+\end{center}
+\caption{(Left two panels) Successful match examples using TimeOverlap Algo. (Right two panels) Successful match example using 3DAngle Algo. }
+\label{fig:ex}
+\end{figure}
+
+
+
+
 
 
 \end{document}

@@ -1,9 +1,11 @@
 \select@language {english}
-\contentsline {section}{\numberline {1}Introduction}{3}{section.2}
-\contentsline {section}{\numberline {2}Matching Algorithms}{4}{section.3}
-\contentsline {subsection}{\numberline {2.1}CFAlgoStartPointMatch}{4}{subsection.4}
-\contentsline {subsection}{\numberline {2.2}CFAlgoWireOverlap}{5}{subsection.6}
-\contentsline {subsection}{\numberline {2.3}CFAlgoVolumeOverlap}{6}{subsection.8}
-\contentsline {subsection}{\numberline {2.4}CFAlgoChargeDistrib}{7}{subsection.10}
-\contentsline {subsection}{\numberline {2.5}CFAlgoQRatio}{8}{subsection.12}
-\contentsline {subsection}{\numberline {2.6}CFAlgoStartPointCompat}{9}{subsection.14}
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}
+\contentsline {section}{\numberline {2}Matching Algorithms}{4}{section.2}
+\contentsline {subsection}{\numberline {2.1}CFAlgoStartPointMatch}{4}{subsection.2.1}
+\contentsline {subsection}{\numberline {2.2}CFAlgoWireOverlap}{5}{subsection.2.2}
+\contentsline {subsection}{\numberline {2.3}CFAlgoVolumeOverlap}{6}{subsection.2.3}
+\contentsline {subsection}{\numberline {2.4}CFAlgoChargeDistrib}{7}{subsection.2.4}
+\contentsline {subsection}{\numberline {2.5}CFAlgoQRatio}{8}{subsection.2.5}
+\contentsline {subsection}{\numberline {2.6}CFAlgoStartPointCompat}{9}{subsection.2.6}
+\contentsline {subsection}{\numberline {2.7}CFAlgoTimeOverlap}{10}{subsection.2.7}
+\contentsline {subsection}{\numberline {2.8}CFAlgo3DAngle}{11}{subsection.2.8}
