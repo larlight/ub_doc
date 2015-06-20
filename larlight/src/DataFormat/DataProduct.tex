@@ -1,6 +1,22 @@
 The data product classes are meant to store LArSoft output data, hence their design follows closely with what is in LArSoft.
 If you look at a header file of data product class, you should find LArLite data product classes carry same or very similar attributes name to reduce confusion.
 For adding further data product classes to store LArSoft data, it is recommended to keep this trend to reduce confusion.
+
+\subsection{Classification of ``Data'' Type}
+There are three types of data:
+\begin{itemize}
+\item event-wise data ... {\ttfamily enum larlite::DataType\_t}
+\item run-wise data ... {\ttfamily enum larlite::RunDataType\_t}
+\item subrun-wise data ... {\ttfamily enum larlite::SubRunDataType\_t}
+\end{itemize}
+Each \enum listed above contains further ``data type'' that belongs to each classification above.
+As you might guess, above classifications correspond to the unit data:
+there can be more than one event in a sub-run, and there can be more than one subrun in one run.
+An event-wise data is stored at each event boundary, and run/subrun-wise data are stored at
+each run/subrun boundary.
+
+\subsection{Data Products}
+
 Here is a list of LArLite data products (left) with corresponding LArSoft data product (right) as of now.
 \begin{lstlisting}
     larlite::gtruth <==> simb::GTruth
@@ -24,51 +40,53 @@ Here is a list of LArLite data products (left) with corresponding LArSoft data p
     larlite::calorimetry <==> anab::Calorimetry
     larlite::partid <==> anab::ParticleID
     larlite::pfpart <==> recob::PFParticle
+    larlite::pcaxis <==> recob::PCAxis
+    larlite::potsummary <==> sumdata::POTSummary
     larlite::user_info ... LArLite-only custom data product
+    larlite::event_ass ... LArLite-only custom data product
 \end{lstlisting}
-There is additional data product called {\ttfamily user\_info} which will be described later.
+Additional data products, {\ttfamily user\_info} and {\ttfamily event\_ass}, are described later.
 
 All data product class shares the base class {\ttfamily larlite::data\_base} which stores only one variable: {\ttfamily larlite::data::DataType\_t}. This \enum value specifies the type of data stored. For instance, {\ttfamily larlite::hit} data product stores a type {\ttfamily larlite::data::kHit}.
 
 \subsection{What is stored per event?}
-Despite a few exceptions (which I describe next), each data product class {\ttfamily T} has a corresponding collection class which inherits from {\ttfamily std::vector<T>}, named as {\ttfamily event\_T}. 
-For instance, in {\ttfamily cluster.hh}, you find there is a class {\ttfamily larlite::cluster} and {\ttfamily larlite::event\_cluster} where the latter is a type {\ttfamily std::vector<larlite::cluster>}. What is stored per event is {\ttfamily std::vector<T>}, just like a collection of object is stored in LArSoft. This collection data product also inherits from {\ttfamily event\_base} which carries additional inforamtion:
+Despite a few exceptions (which I describe next), each data product class {\ttfamily T} has a corresponding event-wise collection class
+named as {\ttfamily event\_T}. 
+For instance, in {\ttfamily cluster.h}, you find there is a class {\ttfamily larlite::cluster} and {\ttfamily larlite::event\_cluster} where the latter is a type {\ttfamily std::vector<larlite::cluster>}. What is stored per event is {\ttfamily std::vector<T>}, just like a collection of object is stored in LArSoft. This collection data product also inherits from {\ttfamily event\_base} which carries additional inforamtion:
 \begin{itemize}
 \item {\ttfamily unsigned int} Event number
 \item {\ttfamily unsigned int} Run number
 \item {\ttfamily unsigned int} Sub-Run number
-\item {\ttfamily std::string} Producer's name
-\item {\ttfamily std::map<larlite::product\_id,AssSet\_t>} Association information
+\item {\ttfamily product\_id} Data product ID 
 \end{itemize}
-Just like everything else, {\ttfamily event\_base} inherits from {\ttfamily data\_base} and hence knows its own data product type. Together with the producer's name string, this forms a unique data product identification in LArLite. For instance, type {\ttfamily larlite::data::kHit} made by ``gaushit'' is a specific data product ID. {\ttfamily larlite::product\_id} is a class defined under {\ttfamily core/DataFormat/larlite\_dataformat\_utils.h}, and is simply {\ttfamily std::pair<larlite::data::DataType\_t,std::string>} to hold such data product identity. 
+Just like everything else, {\ttfamily event\_base} inherits from {\ttfamily data\_base} and hence knows its own data product type. Together with the producer's name string, this forms a unique data product identification instance called {\ttfamily product\_id}. For instance, type {\ttfamily data::kHit} made by ``gaushit'' forms a specific data product ID. {\ttfamily product\_id} is a class defined under:
+\begin{lstlisting}
+  core/DataFormat/larlite_dataformat_utils.h
+\end{lstlisting}
+and is simply {\ttfamily std::pair<data::DataType\_t,std::string>} to hold such data product identity.
 
-As you noticed, the last bullet point above is the associlation information holder.
-It is a {\ttfamily std::map} with a key that identifies an associated data product ID, and the value holds the corresponding association information.
-See Sec.\ref{chap:dataformat:association} for details of association information.
+It should be noted {\it most of} {\ttfamily larlite::event\_T} inherits from {\ttfamily std::vector<T>} with an exception of {\ttfamily event\_ass}, the association data product. In fact there is no such data product called {\ttfamily ass} (of course, it's inappropriate, right?). More details about this data product is described later in Sec.\ref{chap:dataformat:association}.
 
-\subsubsection{Data Products Exception to {\ttfamily event\_T}}
-Exceptions to this event-wise collection storage scheme include {\ttfamily larlite::mcnu} and {\ttfamily larlite::mctrajectory}.
-In LArSoft, {\ttfamily simb::MCNeutrino} is stored as a part of {\ttfamily simb::MCTruth}. Likewise, {\ttfamily simb::MCTrajectory} is stored as a part of {\ttfamily simb::MCParticle}. LArLite respects this scheme and stores {\ttfamily larlite::mcnu} in {\ttfamily larlite::mctruth} and {\ttfamily larlite::mctrajectory} in {\ttfamily larlite::mcpart}.
+\subsubsection{Exception to {\ttfamily event\_T}}
+Exceptions to this event-wise collection storage scheme include {\ttfamily potsummary}, {\ttfamily mcnu}, and {\ttfamily mctrajectory}.
+A reason for {\ttfamily potsummary} is simple: this is a sub-run data type and not an event-wise data type.
+In LArSoft, {\ttfamily simb::MCNeutrino} is stored as a part of {\ttfamily simb::MCTruth}. Likewise, {\ttfamily simb::MCTrajectory} is stored as a part of {\ttfamily simb::MCParticle}. LArLite respects this scheme and stores {\ttfamily mcnu} in {\ttfamily mctruth} and {\ttfamily mctrajectory} in {\ttfamily mcpart}.
 
-\subsubsection{A few remarks on MC data products}
-In case you are unfamiliar with these MC information, though this is a side-track, {\ttfamily larlite::mcnu} stores neutrino specific information from neutrino generator. It is a part of {\ttfamily larlite::mctruth} because a generator (whether it is neutrino generator or not) stores {\ttfamily larlite::mctruth} in general. Similarly, {\ttfamily larlite::mctrajectory} is part of {\ttfamily larlite::mcpart} because a particle's trajectory points (that is what {\ttfamily larlite::mctrajectory} is) belong to a particle information which is {\ttfamily larlite::mcpart}.
+In case you are unfamiliar with these MC information, though this is a side-track, {\ttfamily mcnu} stores neutrino specific information from neutrino generator. It is a part of {\ttfamily mctruth} because it is created by a generator in general. Similarly, {\ttfamily mctrajectory} is part of {\ttfamily mcpart} because a particle's trajectory points (that is what {\ttfamily mctrajectory} is) belong to a particle information which is {\ttfamily mcpart}.
 
 \subsubsection{More useful info to store?}
 If you have some information you think is very useful, let's store it :)
-For instance, it was advised that knowing a part of {\ttfamily larlite::mctrajectory} that is inside the fiducial volume is very useful information.
-So we added this information in {\ttfamily larlite::mctrajectory} for users so that a user can access particle trajectory points inside the fiducial volume quickly instead of looping over all trajectory points and inspect whether it is in the fiducial volume or not.
-
 Your ideas can help others. So please share it!
 
 \subsubsection{Adding new data product?}
-By all means, go ahead. There are important pieces missing, for instance vertex!
+By all means, go ahead. 
 That being said, however, a mistake can break DataFormat which is shared among all users.
 So feel free to consult with the author.\\
 
 Alternative solution is to ask the author to add it. 
 Believe me, it's so simple and it won't take me $>$10 minutes to add another on the list above.
 
-\subsection{Custom data product for dynamic variable declaration ... {\ttfamily user\_info}}
+\subsection{Dynamic Data Container ... {\ttfamily user\_info}}
 
 Sometimes you want a custom data product and store information in the output data root file.
 For instance:
@@ -101,52 +119,50 @@ But this seems to be a matter of micro-seconds or less, depending on number of k
 \label{chap:dataformat:association}
 The author has little idea about how exactly association is stored in \ART. But that does not matter.
 
-As you have seen in the previous section, all data product are stored in terms of {\ttfamily std::vector} collection.
-So ultimately what you need to associate one object to (an)other are:
-\begin{itemize}
-\item Associated data product ID
-\item A set of indexes that point to the right {\ttfamily std::vector} index.
-\end{itemize}
-As mentioned earlier, {\ttfamily event\_base} class holds association information
+As you have seen in the previous section, all event-wise data products are stored in terms of {\ttfamily std::vector} collection.
+So ultimately what you need to associate one object (A) to another (B) are:
+\begin{enumerate}
+\item {\ttfamily product\_id} for A and B
+\item A set of indexes (A) that point to the right {\ttfamily std::vector} index (B).
+\end{enumerate}
+When referring an association of A to B, information such as 2 above can be represented as a two-dimensional array of integers.
+In LArLite, 2 is represented by {\ttfamily AssSet\_t} defined as:
 \begin{lstlisting}
-    std::map<larlite::product_id,larlite::AssSet_t>
+typedef std::vector<std::vector<unsigned int> > AssSet_t;
 \end{lstlisting}
-where 
-\begin{lstlisting}
-larlite::AssSet_t
-larlite::product_id
-\end{lstlisting}
-are simply
-\begin{lstlisting}
-std::vector<std::vector<unsigned int>>
-std::pair<larlite::data::DataType_t,std::string>
-\end{lstlisting}
-in respective order. As you might guess, the key is the product ID of associated data container, and the value is the association information. 
+The association data product, {\ttfamily event\_ass}, stores {\ttfamily AssSet\_t} for a unique combination
+of {\ttfamily product\_id} pair. Note that there is no limitation on how many of such association to be stored in
+this data product. Also, two separate instance of {\ttfamily event\_ass} may store a different association information
+for an identical {\ttfamily product\_id} pair, although that rarely happens and the author has never seen in a real
+practice.
 
-The association information needs to link a) a location of subject data product and b) locations of associated data products.
-In case it is confusing, a) is the index of {\ttfamily event\_T} which holds this association information.
-b) is a set of indices that concerns associated data products, say {\ttfamily event\_U}.
-
-For this reason, the association information is a two-layered vector: the outer (primary) vector index points to one (origin) data product, and the inner vector indecies point to associated data product indices. 
+\subsubsection{Accessing a Stored Association}
 
 Retrieving association is as simple as calling the following function:
 \begin{lstlisting}
-    event_base::association(larlite::product_id)
+    event_base::association(const& product_id A, const& product_id B)
 \end{lstlisting}
-You provide the product ID of association as an argument.
+You provide a pair of product ID, A and B respectively, and you receive an association of A=>B.
 
 For instance, here's a code snipset to loop over associated hits for clusters to calculate charge sum per cluster and fill a histogram.
 \begin{lstlisting}
-    auto ass_info = ev_cluster.association(ev_hit.id());
-    double cluster_q=0;
-    for(auto const& hit_indices : ass_info) {
-      cluster_q = 0;
-      for(auto const& hit_index : hit_indices)
-        cluster_q += ev_hit[hit_index].Charge();
-      h->Fill(cluster_q);
-    }
+  auto clusters = storage->get_data<event_cluster>(``fuzzycluster''); // Get clusters
+  auto hits     = storage->get_data<event_hit>(``gaushit''); // Get hits
+  auto ass_data = storage->get_data<event_ass>(``fuzzycluster''); // Get association
+
+  // Get association cluster => hit
+  auto const& cluster_to_hit_ass = ass_data->association(clusters->id(),hits->id());
+
+  // Loop over associated groups of hits
+  double cluster_q=0;
+  for(auto const& hit_indices : cluster_to_hit_ass)
+    cluster_q = 0;
+    for(auto const& hit_index : hit_indices)
+    cluster_q += (*ev_hit)[hit_index].Charge();
+    h->Fill(cluster_q);
+  }
 \end{lstlisting}
-where {\ttfamily ev\_cluster} and {\ttfamily ev\_hit} are both variable names of {\ttfamily event\_cluster} and {\ttfamily event\_hit} data product class instances. \\
+where {\ttfamily storage} is a {\ttfamily storage\_manager} class instance, and {\ttfamily h} is a {\ttfamily TH1D} histogram instance.
 
 It might be also helpful to remember a simple command to dump association information:
 \begin{lstlisting}
@@ -154,11 +170,39 @@ It might be also helpful to remember a simple command to dump association inform
 \end{lstlisting}
 will output stored association information to the text output stream. \\
 
-If you wish to list a list of associated producer's name by specifying a data type, you can use
-{\ttfamily association\_keys(const data::DataType\_t type)} function. In particular, you can obtain
-the list of associated hit producer to a cluster like this:
+\subsubsection{Handy Utilities to {\it Find} Associations}
+{\ttfamily event\_ass::association} function described above requires a user to provide two product IDs.
+Sometimes (actually quite often) you want to ``search'' an association by providing one product ID and a type of the other.
+For instance, if I am analyzing a cluster data product made by ``fuzzycluster'', I may not necessarily know the producer
+name of an associated hit data product. In that case, all I know for sure is ``I want an associated {\it hit}.''
+
+{\ttfamily event\_ass} implements a few functions to allow you a search with such partial product ID pair information.
+Those are:
 \begin{lstlisting}
-    for(auto const& producer : ev_cluster.association_keys(larlite::data::kHit))
-        std::cout<<``Hit producer: ``<<producer.c_str()<<std::endl;
+  AssID_t event_ass::find_one_assid(const T& a, const T& b);
+  AssID_t event_ass::find_unique_assid(const T& a, const T& b);
+  std::vector<AssID_t> event_ass::find_all_assid(const T& a, const T& b);
 \end{lstlisting}
+These are templated functions, and one of two input argument has to be {\ttfamily product\_id} while the other
+can be also {\ttfamily product\_id} or simply {\ttfamily data::DataType\_t}, a data product type.
+The return, {\ttfamily AssID\_t} is simply an unsigned integer that identifies a specific product ID pair and the corresponding
+association information that can bre retrieved by the following functions:
+\begin{lstlisting}
+  /// returns a pair of product ID A and B
+  std::pair<product_id,product_id> event_ass::association_keys(AssID_t);
+  /// returns AssSet_t for a specified association info
+  AssSet_t event_ass::association(AssID_t); 
+\end{lstlisting}
+
+Note that a function {\ttfamily find\_one\_assid} returns {\it any} one of associations that matches with input argument information.
+That means, if there are more than one type of association that matches your request, you do not have a control on which one to be
+returned (although that is, again, very rare and the author has never seen such use of association data product). If you wish to
+ensure the returned association corresponds to a unique pair of product IDs, you may want to use {\ttfamily find\_unique\_assid}
+although this method takes more time to ensure the uniqueness of returned association information. Finally, if you wish to obtain
+{\it all} matched association information, you can use {\ttfamily find\_all\_assid}. But again, so far always one association
+data product stores (possibly multiple) unique pairs of product IDs.
+
+More practical usecase of association data product usage is described in the later analysis section, and the author suggests to
+read there before you write a code to retrieve/use association information.
+
 Please contact the author to ask more questions or suggestions to expand this section.

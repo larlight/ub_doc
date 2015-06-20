@@ -111,7 +111,7 @@ Note you are still loading event interactively, so this method is not very fast 
 This is an example to run an event loop.
 \begin{lstlisting}
 {
-    gSystem->Load(``libDataFormat'');
+    gSystem->Load(``libLArLite_DataFormat'');
     larlite::storage_manager mgr;
     mgr.set_io_mode(mgr.kREAD);                // Option: READ, WRITE, BOTH
     mgr.add_in_filename(``hit_sample.root''); // Specify input file name
@@ -135,9 +135,5 @@ This is an example to run an event loop.
 \end{lstlisting}
 Note that this script makes an exact copy of input file to the output.
 If you want to modify it, you can use non-const {\ttfamily event\_hit} pointer in the script above.
-
-
-
-
 
 

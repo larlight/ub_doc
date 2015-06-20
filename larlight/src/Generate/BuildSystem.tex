@@ -1,0 +1,94 @@
+This section covers the basics of how the LArLite build works, aiming to reduce a black-box content for users and developers.
+The following topics are ordered such that a topic of interest to more people gets covered first.
+
+\subsection{{\ttfamily Compiler} and {\ttfamily Linker} for Dummies}
+Skip if you already know about them, obviously.
+
+Our \CPP source codes are merely descriptions of what we want our computer to do in human-friendly language 
+(disagree on ``human-fiendly''? Welcome to the club).
+A {\ttfamily compiler} takes in our source code and generate a machine-friendly description, often called as an {\it object file} or {\it byte code}.
+When you compile your package in LArLite, you find files with {\ttfamily .o} extension: these are the object files.
+
+Now having many granular object files is not very helpful.
+A {\ttfamily linker} allows us to combine multiple object files and create a {\it shared object library} file.
+You find such files with {\ttfamily .so} extension under {\ttfamily \$LARLITE\_LIBDIR} if you compiled any package.
+The scope of what objects should be put together is really a developer's choice.
+In LArLite, this is done per package.
+Another (and more important) advantage of shared object libraries kicks in when you compile another code that depends on it.
+Say you have a \CPP class {\ttfamily A} and {\ttfamily B} where {\ttfamily B} depends on {\ttfamily A}. 
+Once you have {\ttfamily A} compiled with {\ttfamily .so} file, a separate compilation of {\ttfamily B} does not require
+a re-compilation of {\ttfamily A}'s source code. Instead, you can {\it link} the {\ttfamily A}'s library upon compilation
+of {\ttfamily B}'s library.
+
+In LArLite, we compile files with {\ttfamily .cxx} extensions with a compiler, and create a shared object library using a linker, which
+is nothing special compared to any other softwares' build system.
+
+\subsection{{\ttfamily INCFLAGS} and {\ttfamily LDFLAGS}: LArLite Compiler Flags}
+In LArLite package's {\ttfamily GNUmakefile}, you may see variables named as {\ttfamily INCFLAGS} and {\ttfamily LDFLAGS} where
+the latter may not appear in some simple code packages (i.e. don't worry about not seeing {\ttfamily LDFLAGS} in your {\ttfamily GNUmakefile}).
+These are called {\it compiler flags} and passed onto a compiler and linker respectively.
+
+\subsubsection{INCFLAGS}
+{\ttfamily INCFLAGS} is used by a compiler to search for files you specify with {\ttfamily \#include} preprocessor command in your source code.
+In other words, if your source code calls {\ttfamily \#include <TH1D.h>}, then the directory path which contains {\ttfamily TH1D.h} has to be
+added to {\ttfamily INCFLAGS}. The format of {\ttfamily INCFLAGS} is ``-I\$PATH'' where you should replace ``\$PATH'' with the relevant
+directory path.
+
+That being said, by default, LArLite includes a \ROOT's include flags.
+\ROOT follows a standard method to provide such flags, and you can try this in your installation as well:
+\begin{lstlisting}
+  > root-config --cflags
+\end{lstlisting}
+The output of above command is a part of LArLite's default {\ttfamily INCFLAGS}.
+
+\subsubsection{LDFLAGS}
+{\ttfamily LDFLAGS} is used by a linker to find libraries to be linked into your package. If your package depends on any externaly compiled
+code, for instance a \ROOT class {\ttfamily TH1D}, you have to specify the library to be linked here. The format is 
+{\ttfamily -L\$PATH -l\$LIBNAME} where ``\$PATH'' is the directory path that contains a library named ``lib\$LIBNAME.so''. Note that
+you should exclude the prefix ``lib'' when you specify it in {\ttfamily LDFLAGS} as that is the standard of how a linker takes in library names.
+
+The default flags in LArLite includes a \ROOT's library flags.
+Again, as it was the case for {\ttfamily INCFLAGS}, you can try:
+\begin{lstlisting}
+  > root-config --libs
+\end{lstlisting}
+which include most of standard \ROOT libraries such as IO, histogram, TTree, TMatrix, TVector3, etc.
+
+\subsubsection{Flags for LArLite Packages}
+You may write a package that depends on existing LArLite code.
+One example is an analysis code that inherits from {\ttfamily lalrite::ana\_base}. 
+Then you will have to specify {\ttfamily INCFLAGS} and {\ttfamily LDFLAGS}.
+
+Specifying every single {\ttfamily INCFLAGS} and {\ttfamily LDFLAGS} for LArLite code is definitely annoying.
+So we follow the popular standard and the following scripts are prepared:
+\begin{itemize}
+\item {\ttfamily larlite-config} for LArLite's analysis framework
+\item {\ttfamily basictool-config} for code under \UserDev/BasicTool 
+\item {\ttfamily seltool-config} for code under \UserDev/SelectionTool
+\item {\ttfamily recotool-config} for code under \UserDev/RecoTool
+\end{itemize}
+These scripts can be run with either {\ttfamily --includes} or {\ttfamily --libs} option, and they
+simply prints out relevant string to be added to {\ttfamily INCFLAGS} and {\ttfamily LDFLAGS} respectively.
+For instance, you may try:
+\begin{lstlisting}
+  INCFLAGS += $(shell larlite-config --includes)
+\end{lstlisting}
+and/or
+\begin{lstlisting}
+  LDFLAGS += $(shell larlite-config --libs)
+\end{lstlisting}
+in your {\ttfamily GNUmakefile}.
+
+If you use {\ttfamily gen\_class\_anaunit} or similar script, actually, this modification to a {\ttfamily GNUmakefile} is done
+by the same script. Hence you do not need to worry about it.
+
+\subsection{Compiler \& Linker Used by LArLite}
+Let me make a brief note on how compiler/linker is picked and what default compiler/linker flags are set for LArLite build.
+
+When possible LArLite attempts to use \clang++. In particular this is searched and set when one runs {\ttfamily setup.sh} script.
+The configured compiler name is set to a shell environment variable {\ttfamily \$LARLITE\_CXX}.
+Further, compiler/linker specific flags are defined in:
+\begin{lstlisting}
+  > $LARLITE_BASEDIR/Makefile/Makefile.X
+\end{lstlisting}
+where {\ttfamily X} may be either ``Darwin'' or ``Linux''. 

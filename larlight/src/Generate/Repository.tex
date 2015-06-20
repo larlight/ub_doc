@@ -22,7 +22,9 @@ These features of \UserDev are there so that you feel more free to make a mess (
 
 \subsection{Creating Your Sub-Repository in \UserDev}
 \label{sec:devrepo:makenew}
-Obviously I cannot just say ``do whatever under \UserDev'' and leave: I would love to support a very easy way to develop code (or make a mess) under \UserDev. I will just show you how to do things here:
+Obviously I cannot just say ``do whatever under \UserDev'' and leave: 
+I would love to support a very easy way to develop code (or make a mess) under \UserDev. 
+I will just show you how to do things here:
 \begin{lstlisting}
      > llgen_repository MyRepo
 \end{lstlisting}
@@ -31,9 +33,10 @@ This should create a new directory called {\ttfamily MyRepo} under \UserDev.
 That is your new repository. As said, this does not affect LArLite repository. 
 If you don't want to keep {\ttfamily MyRepo}, simply ``{\ttfamily rm -r}'' it.
 
-Another thing to note here: your repository will contain code and you will compile them, making a compiled shared object library. 
-Your repository name will be used to name your library file (if you follow LArLite code generation scripts described in the followings). 
-So pick a name that suits for your purpose. You do not want to pick a generic name that might coincide with some other libraries on your machine.
+Another thing to note here: your repository will contain code and you will compile them, making a compiled 
+shared object library. Your repository name will be used to name your library file (if you follow LArLite 
+code generation scripts described in the followings). So pick a name that suits for your purpose. You do 
+not want to pick a generic name that might coincide with some other libraries on your machine.
 
 \subsection{What's in MyRepo?}
 
@@ -46,12 +49,14 @@ In the previous section, we created a new repository {\ttfamily MyRepo} under \U
 
 First of all, go to {\ttfamily github.com} and create your own repository: go to your {\ttfamily github} account web page, and click on ``+'' symbol that is toward right-top of the web page. Choose ``New repository''. Then enter the repository name you are about to create. Ideally you may want to choose a somewhat unique name as described in Sec.\ref{sec:devrepo:makenew}. You can always remove your repository if you don't like it.
 
-Then checkout your empty repository. As an example, I use my empty repo called {\ttfamily EmptyRepo}.
+Then checkout your empty repository. 
+As an example, I use my empty repo called {\ttfamily EmptyRepo} (but note you cannot use my repository as this
+is my private code repository).
 \begin{lstlisting}
     > cd $LARLITE_USERDEVDIR
-    > git clone git@github.com:drinkingkazu/EmptyRepo EmptyRepo
+    > git clone git@github.com:drinkingkazu/
 \end{lstlisting}
-Now simply run:
+Now I simply run:
 \begin{lstlisting}
     > python bin/gen_new_repository EmptyRepo
     > cd EmptyRepo
@@ -59,10 +64,10 @@ Now simply run:
     > git commit -m ``new repository''
     > gitpush -u origin master
 \end{lstlisting}
-and you are done!
-From the next time, if you want to install LArLite from scratch, simply checkout your repository under UserDev with the same name.
-
-As said many times, of course, your repository is independent of LArLite repository.
+and I am done!
+From the next time, if I want to install LArLite from scratch, I would simply checkout my repository under UserDev 
+with the same name. As said many times, of course, your repository is independent of LArLite repository unless
+you wish to merge for sharing purpose (in which case contact the author).
 
 
 

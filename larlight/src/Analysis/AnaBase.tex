@@ -6,6 +6,11 @@ This base class has three important functions that would concern your \anaunit c
     bool ana_base::analyze(larlite::storage_manager* storage)
     bool ana_base::finalize()
 \end{lstlisting}
+In addition, there are two functions recently added and might be useful for some of your analysis.
+\begin{lstlisting}
+    bool ana_base::begin_run(storage_manager* data);
+    bool ana_base::begin_subrun(storage_manager* data);
+\end{lstlisting}
 As it is described in the next subsection, an \anaunit is held by analysis processor which runs an event loop.
 
 \subsection{Flow of Function Calls}
@@ -19,6 +24,13 @@ Then for each event, analysis processor calls {\ttfamily analyze} function. Even
 
 \subsubsection{{\ttfamily finalize()}}
 At the end of event loop, {\ttfamily finalize} function is called. This is where you might want to do final wrap-up of your analysis.
+
+\subsubsection{{\ttfamily begin\_run(storage\_manager* storage)}}
+This function is called at each run boundary. In particular it is called before {\ttfamily begin\_subrun} and {\ttfamily analyze}.
+
+\subsubsection{{\ttfamily begin\_subrun(storage\_manager* storage)}}
+This function is called at each sub-run boundary.
+In particular it is called after {\ttfamily begin\_run} if it is concurrently a run boundary, and before {\ttfamily analyze}.
 
 \subsubsection{Storing Output}
 This is sometimes confusing, but there are two kinds of outputs you can store:

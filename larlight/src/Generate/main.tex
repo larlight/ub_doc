@@ -4,12 +4,23 @@ In particular following itmes are discussed in the respective order.
 \begin{itemize}
 \item Getting started: your own code repository
 \item A simple \CPP project package 
-\item Adding a simple \CPP class
-\item Adding \CPP functions
-\item Adding \anaunit (see Ch.\ref{chap:analysis}).
-\item Adding \ertool algorithm class (see \ertool documentation)
-\item Adding \ertool filter class (see \ertool documentation)
-\item Adding \ertool analysis class (see \ertool documentation)
+\item Stuffing your package
+\begin{itemize}
+  \item Simple \CPP class
+  \item \anaunit (see Ch.\ref{chap:analysis}).
+  \item \ertool algorithm class (see \ertool documentation)
+  \item \ertool filter class (see \ertool documentation)
+  \item \ertool analysis class (see \ertool documentation)
+  \item \CPP functions
+\end{itemize}
+\item Details: LArLite build basics
+\item Advanced Code Development
+\begin{itemize}
+  \item \CPP functions outside classes
+  \item Inter-package dependence
+  \item Data product: storing \CPP class instance in \ROOT file
+  \item \python in \CPP (i.e. opposite of \PyROOT)
+\end{itemize}
 \end{itemize}
 
 \section{Creating Your Repository}
@@ -20,6 +31,14 @@ In particular following itmes are discussed in the respective order.
 \label{sec:package}
 \input{./src/Generate/Package}
 
-\section{Adding More \CPP Classes}
+\section{Adding Basic \CPP Classes}
 \label{sec:expand_package}
 \input{./src/Generate/Classes}
+
+\section{Understanding the Build}
+\label{sec:build_package}
+\input{./src/Generate/BuildSystem}
+
+\section{Advanced Development}
+\label{sec:advanced_package}
+\input{./src/Generate/Advanced}

@@ -15,11 +15,12 @@ Here is a brief list of requirements you need to checkout and compile LArLite:
     \end{itemize}
 \item \ROOT
     \begin{itemize}
-    \item v5.34.14 or later
+    \item For ROOT5, v5.34.08 or later
+    \item For ROOT6, v6.02.05 or later
     \end{itemize}
 \end{itemize}
 
-If your system does not meet the requirements above, or if you have requirements above fulfilled but have an issue with the build, please contact the author!
+If your system cannot meet the requirements above, or if you have requirements above fulfilled but have an issue with the build, please contact the author!
 
 Note that these are minimal requirements to build LArLite. It's strongly recommended to have resources noted in the following subsection so that you can use:
 \begin{itemize}
@@ -59,10 +60,12 @@ Following features are strongly encouraged:
 
 Please note there are dependencies among items listed above.
 In particular, LArLite depends on \ROOT, \PyROOT depends on \python, and of course all compilation depends on the compiler.
-If you are to obtain/update those, you might want to do them in order as well. For instance, install \clang, install \python 2.7, then compile \ROOT from source (to get \PyROOT compilation with your new \python), and then compile LArLite.
+If you are to obtain/update those, you might want to do them in order as well. 
+For instance, install \clang, install \python 2.7, then compile \ROOT from source (to get \PyROOT compilation with your new \python), 
+and then compile LArLite.
 
 \subsubsection{I don't have \clang. What do I miss?}
-Please refer to FAQ in Sec.\ref{sec:faq_build}.
+Nothing serious. Please refer to FAQ in Sec.\ref{sec:faq_build}.
 
 \subsubsection{Why \PyROOT?}
 Simply because \python is 

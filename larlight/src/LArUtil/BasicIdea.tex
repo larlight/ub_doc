@@ -6,14 +6,14 @@ There are two features that all utility classes in \LArUtil shared. These are (1
 Like they are in LArSoft, all of \Geometry, \LArProperties, and \DetectorProperties are implemented as singleton class. That means you cannot access these class instances by invoking their constructor. Instead, all of them have {\ttfamily GetME()} function which returns the constant pointer to its own instance.
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libLArUtil'')
+    root[0] gSystem->Load(``libLArLite_LArUtil'')
     root[1] larutil::Geometry::GetME()
 \end{lstlisting}
 or in \PyROOT
 \begin{lstlisting}
     > python
     >>> from ROOT import *
-    >>> gSystem.Load(``libLArUtil'');
+    >>> gSystem.Load(``libLArLite_LArUtil'');
     >>> larutil.Geometry.GetME()
 \end{lstlisting}
 You might say ``I worry about overhead of calling {\ttfamily GetME()} function each time I need it.'' First, this won't take even a micro-second. If your code takes more than 10 micro-seconds to run per this function call, you can discard such worry! Secondly, feel free to store {\ttfamily larutil::Geometry} const pointer so that you don't have to call {\ttfamily GetME()}. But never delete it (i.e. respect it should be const)! 
@@ -21,14 +21,14 @@ You might say ``I worry about overhead of calling {\ttfamily GetME()} function e
 As you see above, \LArUtil classes are supported in \CINT and \PyROOT just like other LArLite classes. Accessing the geometry or detector property information is, therefore, very starightforward. When you forget how many TPC channels exist in the detector, just try:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libLArUtil'')
+    root[0] gSystem->Load(``libLArLite_LArUtil'')
     root[1] larutil::Geometry::GetME()->Nchannels()
     (const unsigned int) 8254
 \end{lstlisting}
 Or maybe getting the position of PMT channel 1:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libLArUtil'')
+    root[0] gSystem->Load(``libLArLite_LArUtil'')
     root[1] Double_t xyz[3]={0.}
     root[2] larutil::Geometry::GetME()->GetOpChannelPosition(1,xyz)
     root[3] std::cout<<xyz[0]<<`` : ``<<xyz[1]<<`` : ``<<xyz[2]<<std::endl;
@@ -38,7 +38,7 @@ Or maybe getting the position of PMT channel 1:
 Or maybe getting the view type of TPC channel 5000
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libLArUtil'')
+    root[0] gSystem->Load(``libLArLite_LArUtil'')
     root[1] Double_t xyz[3]={0.}
     root[2] larutil::Geometry::GetME()->View(5000)
     (const enum larlite::geo::View_t)2
@@ -50,7 +50,7 @@ By default all utility classes are set for MicroBooNE experiment. Though the des
 Currently another experiment supported is ArgoNeuT. To reconfigure all utilities for ArgoNeuT, you can do:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libLArUtil'')
+    root[0] gSystem->Load(``libLArLite_LArUtil'')
     root[1] larutil::LArUtilManager::Reconfigure(larlite::geo::kArgoNeuT)
 \end{lstlisting}
 The class {\ttfamily LArUtilManager} has a single static function that takes experiment type, which is an {\ttfamily enum} defined under {\ttfamily core/Base/GeoConstants.hh}, and reconfigure all utility classes. If the input experiment type is same as what is already set, then it does nothing. You can call above function at the beginning of your script or {\ttfamily main} function, and the rest of code execution uses the specified experiment type.
@@ -63,7 +63,7 @@ That being said, you can create your own version of TTrees using routines under 
 If you have your custom made {\ttfamily TTree} to instantiate the data member, you can feed it in the following manner:
 \begin{lstlisting}
     > root
-    root[0] gSystem->Load(``libLArUtil'')
+    root[0] gSystem->Load(``libLArLite_LArUtil'')
     root[1] larutil::Geometry::GetME()->SetTreeName(``tree_name'')
     root[2] larutil::Geometry::GetME()->SetFileName(``tree.root'')
     root[3] larutil::Geometry::GetME()->LoadData()

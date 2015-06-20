@@ -12,7 +12,9 @@ Here is a description of minimal set of tests to see if your build was successfu
     0
     root[4] 
 \end{lstlisting}
-Each line above tells \CINT to load compiled shared object libraries. They can be physically found under {\ttfamily \$LARLITE\_BASEDIR/lib} directory. Return value of 0 means the library was successfully found and loaded.
+Each line above tells \CINT to load compiled shared object libraries. 
+They can be physically found under {\ttfamily \$LARLITE\_LIBDIR} directory. 
+Return value of 0 means the library was successfully found and loaded.
 
 Once libraries are validated, you can compile some very basic test routines in each package.
 Each of \Base, \DataFormat, \Analysis, and \LArUtil has {\ttfamily bin} subdirectory. 

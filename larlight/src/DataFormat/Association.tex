@@ -1,0 +1,110 @@
+This section describes some practical usage of an association information that is initially discussed
+in Sec.\ref{chap:dataformat:association}. Note that not everyone needs to know/learn about association
+data product. If you don't have a plan to use it yet, the author recommends you to skip this section
+and come back when you need to learn it. It's cumbersome. Trust him.
+
+OK fine, you really need it. Let's take a simple example case of accessing a {\ttfamily cluster} data
+product produced by ``fuzzycluster''. Say we want to access associated {\ttfamily hit} data product,
+which happened to be produced by ``gaushit'' with an association information
+The following is an example code to do such thing:
+\begin{lstlisting}
+  // get cluster
+  auto clusters = storage->get_data<event_cluster>(``fuzzycluster'');
+  // get hit
+  auto hits     = storage->get_data<event_hit>(``gaushit'');
+  // get association
+  auto ass_data = storage->get_data<event_ass>(``fuzzycluster'');
+
+  // retrieve cluster=>hit association info
+  auto const& ass_info = ass_info->association(clusters->id(), hits->id()); 
+\end{lstlisting}
+There are two typical complaints to above lines of code: 1) too many letters to type, and 2) a user
+has to know a producer name of {\ttfamily hit} data product. The latter is particularly cumbersome
+because the code does not work if a user provided an wrong hit producer name. So the bottom line
+is this is terrible.
+
+We clearly want an ability to ask: ``here's my cluster, give me associated hits.''
+In other words, by a user specifying an associated data product type (i.e. {\ttfamily hit}), we
+want the utility to go look for an associated information. You might remember a similar functionality
+existed in {\ttfamily event\_ass} data product, namely {\ttfamily event\_ass::find\_one\_assid}.
+Yes, you could do this:
+\begin{lstlisting}
+  // get cluster
+  auto clusters = storage->get_data<event_cluster>(``fuzzycluster'');
+  // get association
+  auto ass_data = storage->get_data<event_ass>(``fuzzycluster''); 
+
+  // Search association I want ... clusters=>hit
+  auto ass_id = ass_data->find_one_assid(clusters->id(),data::kHit);
+  // Get association I want
+  auto const& ass_info = ass_data->association(ass_id);
+  // Get hit data product
+  auto hit_product_id = ass_data->association_keys(ass_id).second;
+  auto hits = storage->get_data<event_hit>(ass_id.second);
+\end{lstlisting}
+Great! This approach ended up 0) more letters to type, and also 1) longer time to process as
+the approach involves a ``search'' for a pair of product IDs that matches my request.
+
+Please do not throw away your laptop (or something to the author's office) just yet.
+Let's first approach to reduce number of letters to type. For this, we introduce a function
+{\ttfamily storage\_manager::find\_one\_ass}.
+\begin{lstlisting}
+  // get cluster
+  auto clusters = storage->get_data<event_cluster>(``fuzzycluster''); 
+
+  // Retrieve hit data product & association at the same time
+  event_hits* hits = nullptr;
+  auto const& ass_info = storage->find_one_ass(clusters->id(), hits);
+\end{lstlisting}
+
+Now the number of letters you have to type is dramatically reduced. But let's be careful
+and make sure we understand what we are doing. First of all, the idea is still the same:
+you provide key information for a utility to search an association that corresponds to
+a specific pair of product IDs, A and B. The product ID of A is given by the first
+argument, which is {\ttfamily clusters->id()}. The {\it type} of product ID B is identified
+as {\ttfamily hit} because you provided {\ttfamily event\_hit} type pointer in the second
+argument. The return of the function is a matched association's {\ttfamily AssSet\_t}, and
+when this return is valid the pointer {\ttfamily hits} is pointed to the associated data
+product. Prior to this function call, {\ttfamily hits} variable must be a null pointer.
+
+So this all sounds good. Note that this function call is very similar to
+{\ttfamily event\_ass::find\_one\_assid}, and indeed {\ttfamily storage\_manager} is
+internally using this function to go look for a specific product ID pair.
+So how does {\ttfamily storage\_manager} knows {\it which} {\ttfamily event\_ass} data
+product to look for requested product ID pair? The answer is {\it it does not know},
+and hence perform a linear search in {\it all} {\ttfamily event\_ass} data products that
+exist in the input file. This means you potentially read lots of {\ttfamily event\_ass}
+data products from a file, and hence causing a huge I/O overhead.
+
+The above mentioned problem can be avoided if you can provide a ``producer name'' of
+a specific {\ttfamily event\_ass} data product, which is something you usually know.
+In our example, an association from {\ttfamily cluster} to {\ttfamily hit} is created
+by the same producer as the {\ttfamily cluster}. In such case, you can specify which
+{\ttfamily event\_ass} to search for an association you requested:
+\begin{lstlisting}
+  // get cluster
+  auto clusters = storage->get_data<event_cluster>(``fuzzycluster''); 
+
+  // Retrieve hit data product & association at the same time
+  event_hits* hits = nullptr;
+  auto const& ass_info = storage->find_one_ass( clusters->id(),
+                                                hits,
+                                                clusters->id().second );
+\end{lstlisting}
+As you can see, now the third argument is provided in the {\ttfamily find\_one\_ass} function
+which is a string specifying {\ttfamily event\_ass} producer name (which is {\ttfamily cluster}
+producer name in this case). This last example runs significantly faster than the previous one.
+
+Finally, we should know the actual timing optimization scale we are talking about here.
+A {\ttfamily cluster} to {\ttfamily hit} association is one of the heaviest simply because
+there are many objects (i.e. hits) to make an association. A typical time to load this association
+in a busy events (like cosmics) is a few hundreds of micro-seconds. If you are running a
+computation that might take more than that per event, you might find such timing improvement
+rather negligible. Just always know whether it makes sense to perform an optimization or not.
+
+I hope this section described a practical usecase of association data products well enough.
+If you think there can be more utility methods to be added, please let the author know!
+Also if you need more examples, again just ping the author!
+
+
+
